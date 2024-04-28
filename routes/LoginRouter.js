@@ -5,7 +5,6 @@ const loginController = require("../controllers/LoginController");
 const verifyToken = require("../middlewares/verifyToken");
 
 router.get("/me", verifyToken, loginController.me);
-router.post("/login", loginController.login);
-router.post("/register", loginController.register);
+router.post("/login", verifyToken, loginController.login);
 
 module.exports = router;

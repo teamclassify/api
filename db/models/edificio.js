@@ -7,7 +7,11 @@ const edificio = db.define(
     id: { type: sequelize.INTEGER, primaryKey: true },
     nombre: { type: sequelize.STRING },
   },
+  {
+    timestamps: false,
+  }
 );
+
 
 edificio.associate = function (models) {
   edificio.hasMany(models.Sala, { as: "sala" });

@@ -5,6 +5,8 @@ const { PORT } = require("./config");
 const loginRouter = require("./routes/LoginRouter");
 const salaRouter = require("./routes/SalaRouter");
 const edificioRouter = require("./routes/EdificioRouter");
+const prestamoRouter = require("./routes/PrestamoRouter");
+const claseRouter = require("./routes/ClaseRouter");
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.get("/api", (_, res) => {
 app.use("/api/edificios", edificioRouter);
 app.use("/api/salas", salaRouter);
 app.use("/api/auth", loginRouter);
+app.use("/api/prestamos", prestamoRouter);
+app.use("/api/clases", claseRouter);
 
 app.listen(PORT, () => {
   console.log(`Server start with port ${PORT}`);

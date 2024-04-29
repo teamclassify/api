@@ -10,6 +10,9 @@ const sala = db.define(
     edificio_id: { type: sequelize.INTEGER, references: { model: 'edificio', key: 'id'}},
     cantidad_computadores: { type: sequelize.INTEGER },
   },
+  {
+    timestamps: false
+  }
 );
 
 sala.associate = function (models) {

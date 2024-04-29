@@ -1,68 +1,37 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-
-const {
-  TOKEN_SECRET,
-  ADMIN_USERNAME,
-  ADMIN_PASSWORD,
-  JWT_EXPIRATION_TIME,
-} = require("../config");
+const UserService = require("../services/UserService");
+const service = new UserService();
+const models = require("../db/models");
 
 const login = async (req, res) => {
   try {
-    const user = req.body;
+    const user = await service.findOne(req.uid);
 
-    // check admin user and  password
-    const validUsername = await bcrypt.compare(user.username, ADMIN_USERNAME);
-    const validPassword = await bcrypt.compare(user.password, ADMIN_PASSWORD);
+    // TODO: check body
 
-    if (!validUsername || !validPassword) {
-      return res.status(500).json({ success: false, message: "No auth" });
+    if (!user) {
+      const user = await service.create({ ...req.body, id: req.uid, code: "" });
+
+      await models.UsuarioRol.create({ rol_id: 0, user_id: user.id });
+
+      return res.status(200).json({ success: true });
     }
 
-    // generate jwt
-    const token = jwt.sign(
-      {
-        name: user.username,
-      },
-      TOKEN_SECRET,
-      {
-        expiresIn: JWT_EXPIRATION_TIME,
-      }
-    );
-
-    res.status(200).json({
-      success: true,
-      data: {
-        username: user.username,
-        token,
-      },
-    });
+    res.status(200).json(user);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ success: false, message: "No auth" });
-  }
-};
-
-const register = async (req, res) => {
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const password = await bcrypt.hash(req.body.password, salt);
-    res.status(200).send({ password });
-  } catch (error) {
-    res.status(500).send({ success: false, message: "No auth" });
   }
 };
 
 const me = async (req, res) => {
   try {
-    res.status(200).send(req.user);
+    res.status(200).json({ uid: req.uid });
   } catch (error) {
-    res.status(500).send({ success: false, message: "No auth" });
+    res.status(500).json({ success: false, message: "No auth" });
   }
 };
 
 module.exports = {
   login,
-  register,
   me,
 };

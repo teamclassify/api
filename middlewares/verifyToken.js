@@ -1,19 +1,24 @@
-const jwt = require("jsonwebtoken");
+const { auth } = require("../config/firebase");
 
 const verifyToken = (req, res, next) => {
-  const token = req.header("auth-token");
+  let token = req.headers.authorization;
 
-  if (!token) return res.status(401).json({ error: "No auth" });
-
-  try {
-    const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-
-    req.user = verified;
-
-    next();
-  } catch (error) {
-    res.status(400).json({ error: "invalid token" });
+  if (!token || !token.split(" ")[1]) {
+    return res.status(401).json({ error: "token failed" });
   }
+
+  token = token.split(" ")[1];
+
+  auth
+    .verifyIdToken(token)
+    .then(async (decodedToken) => {
+      const uid = decodedToken.uid;
+      req.uid = uid;
+      next();
+    })
+    .catch(() => {
+      return res.status(401).json({ error: "invalid token" });
+    });
 };
 
 module.exports = verifyToken;

@@ -1,20 +1,19 @@
 const sequelize = require("sequelize");
 const db = require("../index");
-const edificio = require("./edificio");
 
 const sala = db.define(
-  "salas",
+  "sala",
   {
     id: { type: sequelize.INTEGER, primaryKey: true },
-    name: { type: sequelize.STRING },
-    capacity: { type: sequelize.INTEGER },
-    building: { type: sequelize.INTEGER },
-    cantity_pc: { type: sequelize.INTEGER },
+    nombre: { type: sequelize.STRING },
+    capacidad: { type: sequelize.INTEGER },
+    edificio_id: { type: sequelize.INTEGER, references: { model: 'edificio', key: 'id'}},
+    cantidad_computadores: { type: sequelize.INTEGER },
   },
-  {
-    freezeTableName: true,
-    timestamps: true,
-  }
 );
+
+sala.associate = function (models) {
+  sala.hasOne(models.Horario, { as: "horario" });
+};
 
 module.exports = sala;

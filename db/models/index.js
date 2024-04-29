@@ -1,9 +1,14 @@
 const rolModel = require("./rol");
+const claseModel = require("./clase");
+const prestamoModel = require("./prestamo");
+const estadoModel = require("./estado_prestamo");
+const horaModel = require("./hora");
+const diaModel = require("./dia");
 const usuarioModel = require("./usuario");
-const calendarioModel = require("./calendario");
+const horarioModel = require("./horario");
 const edificioModel = require("./edificio");
 const salaModel = require("./sala");
-const prestamoModel = require("./prestamo");
+const eventoModel = require("./evento");
 const usuarioRolModel = require("./usuario_rol");
 
 const models = {};
@@ -13,7 +18,12 @@ models.Usuario = usuarioModel;
 models.UsuarioRol = usuarioRolModel;
 models.Edificio = edificioModel;
 models.Sala = salaModel;
-models.Calendario = calendarioModel;
+models.Horario = horarioModel;
+models.Evento = eventoModel;
+models.Clase = claseModel;
 models.Prestamo = prestamoModel;
+models.Estado = estadoModel;
+models.Hora = horaModel;
+models.Dia = diaModel;
 
 module.exports = models;

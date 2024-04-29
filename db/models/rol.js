@@ -2,15 +2,13 @@ const sequelize = require("sequelize");
 const db = require("../index");
 
 const rol = db.define(
-  "roles",
+  "rol",
   {
     id: { type: sequelize.INTEGER, primaryKey: true },
-    name: { type: sequelize.STRING },
+    nombre: { type: sequelize.STRING },
   },
-  {
-    freezeTableName: true,
-    timestamps: false,
-  }
 );
+
+
 
 module.exports = rol;

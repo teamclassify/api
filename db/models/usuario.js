@@ -2,12 +2,12 @@ const sequelize = require("sequelize");
 const db = require("../index");
 
 const user = db.define(
-  "usuarios",
+  "usuario",
   {
     id: { type: sequelize.INTEGER, primaryKey: true },
-    name: { type: sequelize.STRING },
-    email: { type: sequelize.STRING },
-    code: { type: sequelize.STRING }
+    codigo: { type: sequelize.INTEGER },
+    nombre: { type: sequelize.STRING },
+    correo: { type: sequelize.STRING }
   },
   {
     freezeTableName: true,

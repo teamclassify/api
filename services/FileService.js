@@ -1,4 +1,6 @@
 const models = require("../db/models");
+const ClaseService = require("../services/ClaseService");
+const service = new ClaseService();
 
 class FileService {
   constructor() {}

@@ -2,19 +2,22 @@ const sequelize = require("sequelize");
 const db = require("../index");
 
 const prestamo = db.define(
-  "prestamos",
+  "prestamo",
   {
     id: { type: sequelize.INTEGER, primaryKey: true },
-    amount_people: { type: sequelize.INTEGER },
-    in_charge: { type: sequelize.STRING },
-    semester: { type: sequelize.INTEGER },
-    start_date: { type: sequelize.DATE },
-    end_date: { type: sequelize.DATE }
+    usuario_id: { type: sequelize.INTEGER, references: {model: 'usuario_rol', key: 'id'}},
+    razon: {type: sequelize.STRING},
+    estado_id: { type: sequelize.INTEGER, references: {model: 'estado_prestamo', key: 'id'}},
+    cantidad_personas: { type: sequelize.INTEGER }
   },
   {
     freezeTableName: true,
     timestamps: true,
   }
 );
+
+prestamo.associate = function (models) {
+  prestamo.hasOne(models.Evento, { as: "evento" });
+};
 
 module.exports = prestamo;

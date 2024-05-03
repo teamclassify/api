@@ -6,17 +6,26 @@ class FileService {
   constructor() {}
 
   async upload(data) {
-    let tokens = [], diakey = '', info = [];
+    let tokens = [], info = [];
     const diasSemana = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado']
     for (let el in data) {
       let tmp = [];
       if(data[el].length > 0){
         tmp = data[el].map((x) =>{
+          let diakey = []
           if(x['Alu max'] > 0){
             for (const key in x) {
               if (diasSemana.includes(key)) {
-                diakey = key
-                info = x[key].split(" ");
+                info = x[key].split("\r\n")
+                info.forEach(element => {
+                  const dat = element.split(" ")
+                  diakey.push({
+                    dia: key, 
+                    hora_inicio: parseInt(dat[0].slice(0,2)),
+                    hora_fin: (dat[0][dat[0].length-2] != '0' ? parseInt(dat[0].slice(6,8)) + 1 : parseInt(dat[0].slice(6,8))),
+                    sala: dat[1]
+                  });
+                });
               }
             }
             return {
@@ -24,12 +33,7 @@ class FileService {
               cod_asignatura: x['Codigo materia'].slice(0, x['Codigo materia'].length - 1),
               cod_docente: "0" + x['Cod prof'],
               grupo: x['Codigo materia'][x['Codigo materia'].length - 1],
-              horario:{
-                dia: diakey, 
-                hora_inicio: parseInt(info[0].slice(0,2)),
-                hora_fin: (info[0][info[0].length-2] != '0' ? parseInt(info[0].slice(6,8)) + 1 : parseInt(info[0].slice(6,8))),
-                sala: info[1]
-              },
+              horario: diakey,
             }
           }
       }).filter(x => x);

@@ -10,11 +10,7 @@ const upload = async (req, res) => {
           rows: 1
         },
         columnToKey: {
-          F: 'nombre',
-          A: 'cod_asignatura',
-          D: 'cod_docente',
-          O: 'grupo',
-          P: 'estado_id'
+          "*" : "{{columnHeader}}"
         },
       });
       const response = await service.upload(excelData);

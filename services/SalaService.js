@@ -3,13 +3,11 @@ const models = require("../db/models");
 class SalaService {
   constructor() {}
 
-  async find(building) {
+  async find(params) {
     const query = {};
 
-    if (building) {
-      query.where = {
-        building,
-      };
+    if (params) {
+      query.where = params;
     }
 
     const res = await models.Sala.findAll(query);

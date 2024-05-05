@@ -15,7 +15,7 @@ const get = async (req, res) => {
   const { building } = req.params;
 
   try {
-    const response = await service.find(building);
+    const response = await service.find({ edificio_id: building });
 
     res.json(response);
   } catch (error) {

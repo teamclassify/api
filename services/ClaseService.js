@@ -1,4 +1,5 @@
 const models = require("../db/models");
+const db = require("../db/index")
 
 class ClaseService {
   constructor() {}
@@ -15,6 +16,11 @@ class ClaseService {
 
   async create(data) {
     const res = await models.Clase.create(data);
+    return res;
+  }
+
+  async createFromExcel(data) {
+    const res = await db.query(`INSERT INTO clase (nombre, cod_asignatura, cod_docente, grupo, usuario_id, estado, createdAt, updatedAt) VALUES ('${data.nombre}', '${data.cod_asignatura}', '${data.cod_docente}', '${data.grupo}', '1', 'APROBADO', CURDATE(), CURDATE())`)
     return res;
   }
 

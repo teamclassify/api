@@ -12,17 +12,20 @@ class FileService {
         clases = clases.concat(this.getClases(data[el]));
       }
     }
+    clases.forEach(element => {
+      service.createFromExcel(element)
+    });
     return clases;
   }
 
   getClases(data){
     const clases = data.map((x) =>{
       if(x['Alu max'] > 0){
-        let dias = this.getDays(x)  
+        let dias = this.getDays(x)
         return {
           nombre: x['Nombre materia'],
           cod_asignatura: x['Codigo materia'].slice(0, x['Codigo materia'].length - 1),
-          cod_docente: "0" + x['Cod prof'],
+          cod_docente: "0" + (x['Cod prof'] ? x['Cod prof'] : ""),
           grupo: x['Codigo materia'][x['Codigo materia'].length - 1],
           horario: dias,
         }
@@ -40,7 +43,7 @@ class FileService {
         info.forEach(element => {
           const dat = element.split(" ")
           dias.push({
-            dia: key, 
+            dia: key,
             hora_inicio: parseInt(dat[0].slice(0,2)),
             hora_fin: (dat[0][dat[0].length-2] != '0' ? parseInt(dat[0].slice(6,8)) + 1 : parseInt(dat[0].slice(6,8))),
             sala: dat[1]

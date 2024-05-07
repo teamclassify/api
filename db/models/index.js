@@ -1,7 +1,6 @@
 const rolModel = require("./rol");
 const claseModel = require("./clase");
 const prestamoModel = require("./prestamo");
-const estadoModel = require("./estado_prestamo");
 const horaModel = require("./hora");
 const diaModel = require("./dia");
 const usuarioModel = require("./usuario");
@@ -22,7 +21,6 @@ models.Horario = horarioModel;
 models.Evento = eventoModel;
 models.Clase = claseModel;
 models.Prestamo = prestamoModel;
-models.Estado = estadoModel;
 models.Hora = horaModel;
 models.Dia = diaModel;
 

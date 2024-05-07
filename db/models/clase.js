@@ -4,13 +4,13 @@ const db = require("../index");
 const clase = db.define(
   "clase",
   {
-    id: { type: sequelize.INTEGER, primaryKey: true },
+    id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
     nombre: { type: sequelize.STRING},
     cod_asignatura: { type: sequelize.INTEGER},
-    cod_docente: {type: sequelize.INTEGER},
+    cod_docente: {type: sequelize.STRING},
     grupo: { type: sequelize.CHAR},
-    usuario_id: { type: sequelize.INTEGER, references: {model: 'usuario', key: 'id'}},
-    estado_id: { type: sequelize.INTEGER, references: {model: 'estado_prestamo', key: 'id'}}
+    estado: { type: sequelize.STRING},
+    usuario_id: { type: sequelize.INTEGER, references: {model: 'usuario', key: 'id'}}
   },
   {
     freezeTableName: true,

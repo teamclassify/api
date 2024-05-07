@@ -7,6 +7,7 @@ const salaRouter = require("./routes/SalaRouter");
 const edificioRouter = require("./routes/EdificioRouter");
 const prestamoRouter = require("./routes/PrestamoRouter");
 const claseRouter = require("./routes/ClaseRouter");
+const fileRouter = require("./routes/FileRouter");
 const eventoRouter = require("./routes/EventoRouter");
 
 const app = express();
@@ -23,6 +24,7 @@ app.use("/api/salas", salaRouter);
 app.use("/api/auth", loginRouter);
 app.use("/api/prestamos", prestamoRouter);
 app.use("/api/clases", claseRouter);
+app.use("/api/files", fileRouter)
 app.use("/api/eventos", eventoRouter);
 
 app.listen(PORT, () => {

@@ -7,7 +7,7 @@ const prestamo = db.define(
     id: { type: sequelize.INTEGER, primaryKey: true },
     usuario_id: { type: sequelize.INTEGER, references: {model: 'usuario_rol', key: 'id'}},
     razon: {type: sequelize.STRING},
-    estado_id: { type: sequelize.INTEGER, references: {model: 'estado_prestamo', key: 'id'}},
+    estado: { type: sequelize.STRING},
     cantidad_personas: { type: sequelize.INTEGER }
   },
   {

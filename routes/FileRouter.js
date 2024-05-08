@@ -17,8 +17,8 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 router
-  .post("/uploadClases", upload.single('file'), fileController.uploadClases)
-  .post("/uploadSalas", upload.single('file'), fileController.uploadSalas)
+  .post("/upload/clases", upload.single('file'), fileController.uploadClases)
+  .post("/upload/salas", upload.single('file'), fileController.uploadSalas)
   .put("/update", verifyToken, fileController.update)
   .delete("/delete", verifyToken, fileController._delete);
 

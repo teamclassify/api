@@ -4,7 +4,7 @@ const db = require("../index");
 const prestamo = db.define(
   "prestamo",
   {
-    id: { type: sequelize.INTEGER, primaryKey: true },
+    id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     usuario_id: { type: sequelize.INTEGER, references: {model: 'usuario_rol', key: 'id'}},
     razon: {type: sequelize.STRING},
     estado: { type: sequelize.STRING},

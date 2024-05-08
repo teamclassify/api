@@ -4,7 +4,7 @@ const db = require("../index");
 const edificio = db.define(
   "edificio",
   {
-    id: { type: sequelize.INTEGER, primaryKey: true },
+    id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     nombre: { type: sequelize.STRING },
   },
   {

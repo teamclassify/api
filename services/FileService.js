@@ -1,6 +1,14 @@
-const models = require("../db/models");
 const ClaseService = require("../services/ClaseService");
+const HorarioService = require("../services/HorarioService");
+const DiaService = require("../services/DiaService");
+const HoraService = require("../services/HoraService");
+const EventoService = require("../services/EventoService");
+
 const service = new ClaseService();
+const horarioService = new HorarioService();
+const diaService = new DiaService();
+const horaService = new HoraService();
+const eventoService = new EventoService();
 
 class FileService {
   constructor() {}
@@ -12,8 +20,42 @@ class FileService {
         clases = clases.concat(this.getClases(data[el]));
       }
     }
-    clases.forEach(element => {
-      service.createFromExcel(element)
+    clases.forEach((element) => {
+      service.createFromExcel(element).then(clase => {
+        if (clase && clase.length > 0) {
+          element.horario.forEach((el) => {
+            const edificioName = el.sala.slice(0, 2)
+            const salaName = el.sala.slice(2, 5)   
+            // Creacion del evento
+            eventoService.create({
+              nombre: el.dia,
+              clase_id: clase[0]
+            }).then(evento => {
+              horarioService.findBySala(edificioName, salaName).then(data => {
+              if (data.length > 0) {
+                const horario = data[0].horario
+                // Creacion del dia
+                diaService.create({
+                  nombre: el.dia,
+                  fecha: new Date(),
+                  horario_id: horario
+                }).then(dia => {
+                  // Creacion de hora
+                  horaService.create({
+                    dia_id: dia.id,
+                    hora_inicio: el.hora_inicio,
+                    hora_fin: el.hora_fin,
+                    evento_id: evento.id
+                  }).then(hora => {
+                    console.log("hora creada")
+                  })
+                })
+              }
+              })
+            })
+          });
+        }
+      })
     });
     return clases;
   }

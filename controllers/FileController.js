@@ -3,34 +3,33 @@ const excelToJson = require("../utils/excelToJson");
 const service = new FileService();
 
 const upload = async (req, res) => {
-    try {
-      const excelData = excelToJson(req.file);
-      const response = await service.upload(excelData);
-
-      res.json({ success: true, data: response });
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
+  try {
+    const excelData = excelToJson(req.file);
+    const response = await service.upload(excelData);
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
 };
 
 const update = async (req, res) => {
-    try {
-      const response = await service.update(req.body);
-  
-      res.json({ success: true, data: response });
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
+  try {
+    const response = await service.update(req.body);
+
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
 };
 
 const _delete = async (req, res) => {
-    try {
-      const response = await service.delete(req.body);
-  
-      res.json({ success: true, data: response });
-    } catch (error) {
-      res.status(500).send({ success: false, message: error.message });
-    }
+  try {
+    const response = await service.delete(req.body);
+
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
 };
 
 module.exports = {

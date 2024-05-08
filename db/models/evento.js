@@ -4,7 +4,7 @@ const db = require("../index");
 const evento = db.define(
   "evento",
   {
-    id: { type: sequelize.INTEGER, primaryKey: true },
+    id: { type: sequelize.INTEGER, primaryKey: true , autoIncrement: true},
     clase_id: { type: sequelize.INTEGER, references: {model: 'clase', key: 'id'} },
     prestamo_id: { type: sequelize.INTEGER, references: {model: 'prestamo', key:'id'}}
   },

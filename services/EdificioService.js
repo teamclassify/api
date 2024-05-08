@@ -1,4 +1,5 @@
 const models = require("../db/models");
+const db = require("../db/index")
 
 class EdificioService {
   constructor() {}
@@ -16,6 +17,11 @@ class EdificioService {
   async create(data) {
     const res = await models.Edificio.create(data);
     return res;
+  }
+
+  async findName(name){
+    const res = await db.query(`SELECT * FROM edificios WHERE nombre = '${name}'`)
+    return res
   }
 
   async update(id, data) {

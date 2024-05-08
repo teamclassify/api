@@ -3,17 +3,21 @@ const HorarioService = require("../services/HorarioService");
 const DiaService = require("../services/DiaService");
 const HoraService = require("../services/HoraService");
 const EventoService = require("../services/EventoService");
+const EdificioService = require("../services/EdificioService");
+const SalaService = require("../services/SalaService");
 
 const service = new ClaseService();
 const horarioService = new HorarioService();
 const diaService = new DiaService();
 const horaService = new HoraService();
 const eventoService = new EventoService();
+const edificioService = new EdificioService();
+const salaService = new SalaService();
 
 class FileService {
   constructor() {}
 
-  async upload(data) {
+  async uploadClases(data) {
     let clases = [];
 
     for (let el in data) {
@@ -140,6 +144,36 @@ class FileService {
       }
     }
     return dias;
+  }
+
+  async uploadSalas(data){
+    let salas = []
+    for(let element in data){
+      const salasData = data[element].map((x) => {
+        return{
+          nombre: x['Sala'],
+          capacidad: x['Capacidad'],
+          cantidad_computadores: x['Cantidad Computadores'],
+          edificio: x['Edificio'] 
+        }
+      })
+      salas = salas.concat(salasData)
+      salas.forEach(async (element) => {
+        const edificio = await edificioService.create({
+            nombre: element.edificio
+        })
+        const sala = await salaService.create({
+          nombre: element.nombre,
+          capacidad: element.capacidad,
+          cantidad_computadores: element.cantidad_computadores,
+          edificio_id: edificio.id
+        })
+        const horario = await horarioService.create({
+          sala_id: sala.id
+        }) 
+      });
+    }
+    return salas
   }
 
   async update(id, data) {}

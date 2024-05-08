@@ -1,5 +1,5 @@
-const SalaService = require("../services/SalaService");
-const service = new SalaService();
+const EventoService = require("../services/EventoService");
+const service = new EventoService();
 
 const create = async (req, res) => {
   try {
@@ -12,10 +12,8 @@ const create = async (req, res) => {
 };
 
 const get = async (req, res) => {
-  const { building } = req.params;
-
   try {
-    const response = await service.find({ edificio_id: building });
+    const response = await service.find();
 
     res.json(response);
   } catch (error) {
@@ -27,6 +25,16 @@ const getById = async (req, res) => {
   try {
     const { id } = req.params;
     const response = await service.findOne(id);
+    res.json(response);
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
+const getAllBySala = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await service.findBySala(id);
     res.json(response);
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
@@ -58,6 +66,7 @@ module.exports = {
   create,
   get,
   getById,
+  getAllBySala,
   update,
   _delete,
 };

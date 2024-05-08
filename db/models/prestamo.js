@@ -8,6 +8,8 @@ const prestamo = db.define(
     usuario_id: { type: sequelize.INTEGER, references: {model: 'usuario_rol', key: 'id'}},
     razon: {type: sequelize.STRING},
     estado: { type: sequelize.STRING},
+    hora_inicio: {type: sequelize.INTEGER},
+    hora_fin: {type: sequelize.INTEGER},
     cantidad_personas: { type: sequelize.INTEGER }
   },
   {

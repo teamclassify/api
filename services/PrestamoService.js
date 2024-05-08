@@ -19,6 +19,8 @@ class PrestamoService {
       razon: data.razon,
       estado: "PENDIENTE",
       cantidad_personas: data.cantidad_personas,
+      hora_inicio: data.hora_inicio,
+      hora_fin: data.hora_fin
     });
     return res;
   }

@@ -13,8 +13,13 @@ class PrestamoService {
     return res;
   }
 
-  async create(data) {
-    const res = await models.Prestamo.create(data);
+  async create(data, uid) {
+    const res = await models.Prestamo.create({
+      usuario_id: uid,
+      razon: data.razon,
+      estado: "PENDIENTE",
+      cantidad_personas: data.cantidad_personas,
+    });
     return res;
   }
 

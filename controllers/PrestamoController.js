@@ -3,8 +3,7 @@ const service = new PrestamoService();
 
 const create = async (req, res) => {
   try {
-    const response = await service.create(req.body);
-
+    const response = await service.create(req.body, req.uid);
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

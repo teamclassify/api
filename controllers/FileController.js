@@ -25,7 +25,6 @@ const uploadSalas = async (req, res) => {
 const update = async (req, res) => {
   try {
     const response = await service.update(req.body);
-
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
@@ -35,7 +34,6 @@ const update = async (req, res) => {
 const _delete = async (req, res) => {
   try {
     const response = await service.delete(req.body);
-
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

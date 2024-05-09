@@ -16,7 +16,7 @@ class HorarioService {
     const [results] = await db.query(`
       SELECT ed.id as edificio, h.id as horario, s.id as sala
       FROM salas s
-      INNER JOIN horario h ON h.sala_id = s.id
+      INNER JOIN horarios h ON h.sala_id = s.id
       INNER JOIN edificios ed ON ed.id  = s.edificio_id
       WHERE s.nombre = '${sala}' AND ed.nombre = '${edificio}'`
     );

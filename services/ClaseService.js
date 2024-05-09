@@ -25,7 +25,7 @@ class ClaseService {
       INSERT INTO clase
       (nombre, cod_asignatura, cod_docente, grupo, usuario_id, estado, createdAt, updatedAt)
       VALUES
-      ('${data.nombre}', '${data.cod_asignatura}', '${data.cod_docente}', '${data.grupo}', '1', 'APROBADO', CURDATE(), CURDATE())`
+      ('${data.nombre}', '${data.cod_asignatura}', '${data.cod_docente}', '${data.grupo}', '13', 'APROBADO', CURDATE(), CURDATE())`
     );
     return res;
   }

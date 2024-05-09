@@ -20,7 +20,8 @@ class PrestamoService {
       estado: "PENDIENTE",
       cantidad_personas: data.cantidad_personas,
       hora_inicio: data.hora_inicio,
-      hora_fin: data.hora_fin
+      hora_fin: data.hora_fin,
+      fecha: data.fecha,
     });
     return res;
   }
@@ -39,3 +40,4 @@ class PrestamoService {
 }
 
 module.exports = PrestamoService;
+

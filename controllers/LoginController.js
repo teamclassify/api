@@ -9,9 +9,9 @@ const login = async (req, res) => {
     // TODO: check body
 
     if (!user) {
-      const user = await service.create({ ...req.body, id: req.uid, code: "" });
+      const user = await service.create({ ...req.body, id: req.uid, codigo: "" });
 
-      await models.UsuarioRol.create({ rol_id: 0, user_id: user.id });
+      await models.UsuarioRol.create({ rol_id: 0, usuario_id: user.id });
 
       return res.status(200).json({ success: true });
     }

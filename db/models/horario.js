@@ -8,8 +8,7 @@ const horario = db.define(
     sala_id: { type: sequelize.INTEGER, references: {model: 'sala', key: 'id'}}
   },
   {
-    freezeTableName: true,
-    timestamps: true,
+    timestamps: false,
   }
 );
 

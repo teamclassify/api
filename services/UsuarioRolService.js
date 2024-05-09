@@ -1,27 +1,27 @@
 const models = require("../db/models");
-const db = require("../db/index")
 
-class EdificioService {
+class UsuarioRolService {
   constructor() {}
 
-  async find() {
-    const res = await models.Edificio.findAll();
+  async find(params) {
+    const query = {};
+
+    if (params) {
+      query.where = params;
+    }
+
+    const res = await models.UsuarioRol.findAll(query);
     return res;
   }
 
   async findOne(id) {
-    const res = await models.Edificio.findByPk(id);
+    const res = await models.UsuarioRol.findByPk(id);
     return res;
   }
 
   async create(data) {
-    const res = await models.Edificio.create(data);
-    return res;
-  }
-
-  async findName(name){
-    const res = await db.query(`SELECT * FROM edificios WHERE nombre = '${name}'`)
-    return res
+    const user = await models.UsuarioRol.create(data);
+    return user;
   }
 
   async update(id, data) {
@@ -37,4 +37,4 @@ class EdificioService {
   }
 }
 
-module.exports = EdificioService;
+module.exports = UsuarioRolService;

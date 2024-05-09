@@ -3,17 +3,21 @@ const HorarioService = require("../services/HorarioService");
 const DiaService = require("../services/DiaService");
 const HoraService = require("../services/HoraService");
 const EventoService = require("../services/EventoService");
+const EdificioService = require("../services/EdificioService");
+const SalaService = require("../services/SalaService");
 
 const service = new ClaseService();
 const horarioService = new HorarioService();
 const diaService = new DiaService();
 const horaService = new HoraService();
 const eventoService = new EventoService();
+const edificioService = new EdificioService();
+const salaService = new SalaService();
 
 class FileService {
   constructor() {}
 
-  async upload(data) {
+  async uploadClases(data) {
     let clases = [];
 
     for (let el in data) {
@@ -66,7 +70,7 @@ class FileService {
                                   })
                                   .then(() => {
                                     console.log("hora creada");
-                                    clasesCreadas.push(clase[0]); // Almacenar la clase creada
+                                    clasesCreadas.push(clase[0]);
                                   });
                               });
                           }
@@ -109,6 +113,7 @@ class FileService {
         }
       })
       .filter((x) => x);
+
     return clases;
   }
 
@@ -122,11 +127,14 @@ class FileService {
       "Viernes",
       "Sabado",
     ];
+
     for (const key in x) {
       if (diasSemana.includes(key)) {
         const info = x[key].split("\r\n");
+
         info.forEach((element) => {
           const dat = element.split(" ");
+
           dias.push({
             dia: key,
             hora_inicio: parseInt(dat[0].slice(0, 2)),
@@ -140,6 +148,67 @@ class FileService {
       }
     }
     return dias;
+  }
+
+  async uploadSalas(data) {
+    let salas = [];
+    for (let element in data) {
+      const salasData = data[element].map((x) => {
+        return {
+          nombre: x["Sala"],
+          capacidad: x["Capacidad"],
+          cantidad_computadores: x["Cantidad Computadores"],
+          edificio: x["Edificio"],
+        };
+      });
+
+      salas = salas.concat(salasData);
+
+      // Todas los horarios creados
+      const salasCreadas = [];
+
+      return new Promise((resolve, reject) => {
+        Promise.all(
+          salas.map((element) => {
+            return edificioService
+              .create({
+                nombre: element.edificio,
+              })
+              .then((edificio) => {
+                return salaService
+                  .create({
+                    nombre: element.nombre,
+                    capacidad: element.capacidad,
+                    cantidad_computadores: element.cantidad_computadores,
+                    edificio_id: edificio.id,
+                  })
+                  .then((sala) => {
+                    return horarioService
+                      .create({
+                        sala_id: sala.id,
+                      })
+                      .then(() => {
+                        console.log("horario creado");
+                        salasCreadas.push(sala.id);
+                      });
+                  });
+              });
+          })
+        )
+          .then(() => {
+            if (salasCreadas.length === salas.length) {
+              resolve({ salasCreadas, message: "Salas creadas" });
+            } else {
+              reject(new Error("Error al crear las salas"));
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    }
+
+    return salas;
   }
 
   async update(id, data) {}

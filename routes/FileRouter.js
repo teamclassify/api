@@ -10,14 +10,15 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/')
   },
   filename: function (req, file, cb) {
-    cb(null, "horario.xlsx")
+    cb(null, "doc.xlsx")
   }
 })
 
 const upload = multer({storage});
 
 router
-  .post("/upload", upload.single('file'), fileController.upload)
+  .post("/upload/clases", upload.single('file'), fileController.uploadClases)
+  .post("/upload/salas", upload.single('file'), fileController.uploadSalas)
   .put("/update", verifyToken, fileController.update)
   .delete("/delete", verifyToken, fileController._delete);
 

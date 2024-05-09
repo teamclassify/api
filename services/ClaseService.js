@@ -16,6 +16,7 @@ class ClaseService {
 
   async create(data) {
     const res = await models.Clase.create(data);
+    //hay que crear los eventos con estado pendiente
     return res;
   }
 

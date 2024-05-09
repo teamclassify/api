@@ -199,6 +199,7 @@ class FileService {
 
   async uploadSalas(data) {
     let salas = [];
+
     for (let element in data) {
       const salasData = data[element].map((x) => {
         return {
@@ -211,42 +212,80 @@ class FileService {
 
       salas = salas.concat(salasData);
 
+      let edificios = salas.map((x) => {
+        return x.edificio;
+      });
+
+      edificios = [...new Set(edificios)];
+
       // Todas los horarios creados
+      const edificiosCreados = [];
       const salasCreadas = [];
 
-      return new Promise((resolve, reject) => {
+      return new Promise((resolveEdificio, rejectEdificio) => {
         Promise.all(
-          salas.map((element) => {
+          edificios.map((edificio) => {
             return edificioService
               .create({
-                nombre: element.edificio,
+                nombre: edificio,
               })
-              .then((edificio) => {
-                return salaService
-                  .create({
-                    nombre: element.nombre,
-                    capacidad: element.capacidad,
-                    cantidad_computadores: element.cantidad_computadores,
-                    edificio_id: edificio.id,
-                  })
-                  .then((sala) => {
-                    return horarioService
-                      .create({
-                        sala_id: sala.id,
-                      })
-                      .then(() => {
-                        console.log("horario creado");
-                        salasCreadas.push(sala.id);
-                      });
-                  });
-              });
+              .then(() => edificiosCreados.push(edificio.id));
           })
         )
           .then(() => {
-            if (salasCreadas.length === salas.length) {
-              resolve({ salasCreadas, message: "Salas creadas" });
+            return new Promise((resolve, reject) => {
+              Promise.all(
+                salas.map((sala) => {
+                  return edificioService
+                    .find({
+                      nombre: sala.edificio,
+                    })
+                    .then((edificioObtened) => {
+                      return salaService
+                        .create({
+                          nombre: sala.nombre,
+                          capacidad: sala.capacidad,
+                          cantidad_computadores: sala.cantidad_computadores,
+                          edificio_id: edificioObtened[0].id,
+                        })
+                        .then((sala) => {
+                          salasCreadas.push(sala.id);
+
+                          return horarioService
+                            .create({
+                              sala_id: sala.id,
+                            })
+                            .then(() => {
+                              console.log("horario creado");
+                            });
+                        });
+                    });
+                })
+              )
+                .then(() => {
+                  console.log("salas: ", salas.length);
+                  console.log("Sala creadsa: ", salasCreadas.length);
+                  if (salasCreadas.length === salas.length) {
+                    resolve({ salasCreadas, message: "Salas creadas" });
+                  } else {
+                    reject(new Error("Error al crear las salas"));
+                  }
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+            });
+          })
+          .then(() => {
+            console.log("Edificios: ", edificios.length);
+            console.log("Edificios creados: ", edificiosCreados.length);
+            if (edificiosCreados.length === edificios.length) {
+              resolveEdificio({
+                edificiosCreados,
+                message: "Edificios creados",
+              });
             } else {
-              reject(new Error("Error al crear las salas"));
+              rejectEdificio(new Error("Error al crear las salas y edificios"));
             }
           })
           .catch((error) => {
@@ -254,8 +293,6 @@ class FileService {
           });
       });
     }
-
-    return salas;
   }
 
   async update(id, data) { }

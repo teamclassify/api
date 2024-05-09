@@ -4,8 +4,14 @@ const db = require("../db/index")
 class EdificioService {
   constructor() {}
 
-  async find() {
-    const res = await models.Edificio.findAll();
+  async find(params) {
+    const query = {};
+
+    if (params) {
+      query.where = params;
+    }
+
+    const res = await models.Edificio.findAll(query);
     return res;
   }
 

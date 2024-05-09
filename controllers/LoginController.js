@@ -9,14 +9,18 @@ const login = async (req, res) => {
     // TODO: check body
 
     if (!user) {
-      const user = await service.create({ ...req.body, id: req.uid, codigo: "" });
-
-      await models.UsuarioRol.create({ rol_id: 0, usuario_id: user.id });
-
-      return res.status(200).json({ success: true });
+      return service
+        .create({ ...req.body, id: req.uid, codigo: "" })
+        .then(() => {
+          models.UsuarioRol.create({ rol_id: 1, usuario_id: req.uid }).then(
+            () => {
+              return res.status(200).json({ success: true, data: user });
+            }
+          );
+        });
     }
 
-    res.status(200).json(user);
+    res.status(200).json({ success: true, data: user });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "No auth" });

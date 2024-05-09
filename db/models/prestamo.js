@@ -15,6 +15,7 @@ const prestamo = db.define(
     hora_fin: { type: sequelize.INTEGER },
     fecha: { type: sequelize.DATE },
     cantidad_personas: { type: sequelize.INTEGER },
+    sala_id: { type: sequelize.INTEGER },
   },
   {
     freezeTableName: true,
@@ -27,4 +28,3 @@ prestamo.associate = function (models) {
 };
 
 module.exports = prestamo;
-

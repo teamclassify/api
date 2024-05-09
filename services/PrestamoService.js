@@ -1,4 +1,7 @@
 const models = require("../db/models");
+const UsuarioRolService = require("./UsuarioRolService");
+
+const usuarioRolService = new UsuarioRolService();
 
 class PrestamoService {
   constructor() {}
@@ -14,16 +17,28 @@ class PrestamoService {
   }
 
   async create(data, uid) {
-    const res = await models.Prestamo.create({
-      usuario_id: uid,
-      razon: data.razon,
-      estado: "PENDIENTE",
-      cantidad_personas: data.cantidad_personas,
-      hora_inicio: data.hora_inicio,
-      hora_fin: data.hora_fin,
-      fecha: data.fecha,
+    return usuarioRolService.find({ usuario_id: uid }).then((user) => {
+      if (!user || user.length === 0) {
+        throw new Error("Usuario no encontrado");
+      }
+
+      return models.Prestamo.create({
+        usuario_id: user[0].id,
+        razon: data.razon,
+        estado: "PENDIENTE",
+        cantidad_personas: data.cantidad_personas,
+        hora_inicio: data.hora_inicio,
+        hora_fin: data.hora_fin,
+        fecha: data.fecha,
+        sala_id: data.sala_id,
+      })
+        .then((prestamo) => {
+          return prestamo;
+        })
+        .catch((error) => {
+          throw new Error(error);
+        });
     });
-    return res;
   }
 
   async update(id, data) {
@@ -40,4 +55,3 @@ class PrestamoService {
 }
 
 module.exports = PrestamoService;
-

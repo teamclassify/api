@@ -2,7 +2,13 @@ const db = require("../index");
 const user = require("./usuario");
 const rol = require("./rol");
 
-const UsuarioRol = db.define("usuario_rol", {});
+const UsuarioRol = db.define("usuario_rol", {
+  id: {
+    type: db.Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+});
 
 rol.belongsToMany(user, {
   through: UsuarioRol,

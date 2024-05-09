@@ -5,6 +5,7 @@ const HoraService = require("../services/HoraService");
 const EventoService = require("../services/EventoService");
 const EdificioService = require("../services/EdificioService");
 const SalaService = require("../services/SalaService");
+const db = require("../db/index")
 
 const service = new ClaseService();
 const horarioService = new HorarioService();
@@ -15,7 +16,7 @@ const edificioService = new EdificioService();
 const salaService = new SalaService();
 
 class FileService {
-  constructor() {}
+  constructor() { }
 
   async uploadClases(data) {
     let clases = [];
@@ -32,54 +33,66 @@ class FileService {
     return new Promise((resolve, reject) => {
       Promise.all(
         clases.map((element) => {
-          return service.createFromExcel(element).then((clase) => {
-            if (clase && clase.length > 0) {
-              return Promise.all(
-                element.horario.map((el) => {
-                  const edificioName = el.sala.slice(0, 2);
-                  const salaName = el.sala.slice(2, 5);
+          return this.validarDisponibilidad(element).then(validos => {
 
-                  // Creacion del evento
-                  return eventoService
-                    .create({
-                      nombre: el.dia,
-                      clase_id: clase[0],
-                    })
-                    .then((evento) => {
-                      return horarioService
-                        .findBySala(edificioName, salaName)
-                        .then((data) => {
-                          if (data.length > 0) {
-                            const horario = data[0].horario;
+            return service.createFromExcel(element).then((clase) => {
+              if (clase && clase.length > 0) {
+                return Promise.all(
+                  element.horario.map((el, index) => {
+                    const edificioName = el.sala.slice(0, 2);
+                    const salaName = el.sala.slice(2, 5);
 
-                            // Creacion del dia
-                            return diaService
-                              .create({
-                                nombre: el.dia,
-                                fecha: new Date(),
-                                horario_id: horario,
-                              })
-                              .then((dia) => {
-                                // Creacion de hora
-                                return horaService
+                    // verificar disponi,,
+                    if (!validos[index]) {
+                      console.log("SE CREO LA CLASE CON ID: ", clase.id)
+
+                      // Creacion del evento
+                      return eventoService
+                        .create({
+                          nombre: el.dia,
+                          clase_id: clase[0],
+                        })
+                        .then((evento) => {
+                          console.log("SE CREO el EVENTO CON ID: ", evento.id)
+                          return horarioService
+                            .findBySala(edificioName, salaName)
+                            .then((data) => {
+                              if (data.length > 0) {
+                                const horario = data[0].horario;
+
+                                // Creacion del dia
+                                return diaService
                                   .create({
-                                    dia_id: dia.id,
-                                    hora_inicio: el.hora_inicio,
-                                    hora_fin: el.hora_fin,
-                                    evento_id: evento.id,
+                                    nombre: el.dia,
+                                    fecha: new Date(),
+                                    horario_id: horario,
                                   })
-                                  .then(() => {
-                                    console.log("hora creada");
-                                    clasesCreadas.push(clase[0]);
+                                  .then((dia) => {
+                                    // Creacion de hora
+                                    return horaService
+                                      .create({
+                                        dia_id: dia.id,
+                                        hora_inicio: el.hora_inicio,
+                                        hora_fin: el.hora_fin,
+                                        evento_id: evento.id,
+                                      })
+                                      .then(() => {
+                                        console.log("hora creada");
+                                        clasesCreadas.push(clase[0]);
+                                      });
                                   });
-                              });
-                          }
+                              }
+                            });
                         });
-                    });
-                })
-              );
-            }
-          });
+                    }else{
+                      console.log("LA HORA YA EXISTE")
+                    }
+                  })
+                );
+              }
+            });
+
+          })
         })
       )
         .then(() => {
@@ -93,6 +106,40 @@ class FileService {
           reject(error);
         });
     });
+  }
+
+  validarDisponibilidad(clase) {
+    const horasVerificadas = []
+    return new Promise((resolve, reject) => {
+      Promise.all(
+        clase.horario.map((element) => {
+          return db.query(`
+            SELECT e.id FROM evento e
+            INNER JOIN horas h ON h.evento_id = e.id
+            INNER JOIN dia d ON d.id = h.dia_id
+            INNER JOIN horarios ho ON ho.id = d.horario_id
+            INNER JOIN salas s ON s.id = ho.sala_id
+            INNER JOIN edificios ed ON ed.id = s.edificio_id
+            WHERE h.hora_inicio <= ${element.hora_inicio} AND h.hora_fin > ${element.hora_inicio}
+            OR h.hora_inicio < ${element.hora_fin} AND h.hora_fin >= ${element.hora_fin}
+          `).then(results => {
+            horasVerificadas.push(results.length === 0)
+          }).catch(error => {
+            console.log(error)
+          })
+        })
+      ).then(() => {
+        console.log(horasVerificadas)
+        if (horasVerificadas.length === clase.horario.length) {
+          resolve(horasVerificadas);
+        } else {
+          reject(new Error("Error al verificar las horas"));
+        }
+      })
+        .catch((error) => {
+          reject(error);
+        });
+    })
   }
 
   getClases(data) {
@@ -248,9 +295,9 @@ class FileService {
     }
   }
 
-  async update(id, data) {}
+  async update(id, data) { }
 
-  async delete(id) {}
+  async delete(id) { }
 }
 
 module.exports = FileService;

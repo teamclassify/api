@@ -1,9 +1,20 @@
 const PrestamoService = require("../services/PrestamoService");
+const UsuarioRolService = require("../services/UsuarioRolService");
+
 const service = new PrestamoService();
+const usuarioRolService = new UsuarioRolService();
 
 const create = async (req, res) => {
-  // TODO: comprobar que el usuario tiene permisos para crear un prestamo
-  // TODO: comprobar los datos del body: razon, cantidad_personas, hora_inicio, hora_fin, fecha
+  if (
+    !req.body.razon ||
+    !req.body.fecha ||
+    !req.body.hora_fin ||
+    !req.body.hora_inicio ||
+    !req.body.cantidad_personas
+  ) {
+    return res.status(400).send({ success: false, message: "Faltan datos" });
+  }
+
   try {
     const response = await service.create(req.body, req.uid);
     res.json({ success: true, data: response });
@@ -14,10 +25,8 @@ const create = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    const response = await service.find({
-      usuario_id: req.uid,
-    });
-    res.json(response);
+    const response = await service.getAllByUserWithRelations(req.uid);
+    res.status(200).json({ sucess: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
   }

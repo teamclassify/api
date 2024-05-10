@@ -14,7 +14,9 @@ const create = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    const response = await service.find();
+    const response = await service.find({
+      usuario_id: req.uid,
+    });
     res.json(response);
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

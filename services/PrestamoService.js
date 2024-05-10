@@ -6,8 +6,14 @@ const usuarioRolService = new UsuarioRolService();
 class PrestamoService {
   constructor() {}
 
-  async find() {
-    const res = await models.Prestamo.findAll();
+  async find(params) {
+    const query = {};
+
+    if (params) {
+      query.where = params;
+    }
+
+    const res = await models.Prestamo.findAll(query);
     return res;
   }
 

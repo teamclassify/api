@@ -5,8 +5,8 @@ const prestamoController = require("../controllers/PrestamoController");
 const verifyToken = require("../middlewares/verifyToken");
 
 router
-  .get("/", prestamoController.get)
-  .get("/:id", prestamoController.getById)
+  .get("/", verifyToken, prestamoController.get)
+  .get("/:id", verifyToken, prestamoController.getById)
   .post("/", verifyToken,prestamoController.create)
   .put("/:id", verifyToken, prestamoController.update)
   .delete("/:id", verifyToken, prestamoController._delete);

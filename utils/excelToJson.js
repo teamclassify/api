@@ -1,17 +1,18 @@
 const toJSON = require("convert-excel-to-json");
 
 function excelToJson(file) {
-    const excelData = toJSON({
-        sourceFile: file.path,
-        header: {
-          rows: 1
-        },
-        columnToKey: {
-          "*" : "{{columnHeader}}"
-        },
-      });
+  const excelData = toJSON({
+    source: file.buffer,
+    header: {
+      rows: 1,
+    },
+    columnToKey: {
+      "*": "{{columnHeader}}",
+    },
+  });
 
-    return excelData;
+  return excelData;
 }
 
 module.exports = excelToJson;
+

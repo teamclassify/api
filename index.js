@@ -12,7 +12,12 @@ const eventoRouter = require("./routes/EventoRouter");
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
 app.use(express.json());
 
 app.get("/api", (_, res) => {
@@ -24,7 +29,7 @@ app.use("/api/salas", salaRouter);
 app.use("/api/auth", loginRouter);
 app.use("/api/prestamos", prestamoRouter);
 app.use("/api/clases", claseRouter);
-app.use("/api/files", fileRouter)
+app.use("/api/files", fileRouter);
 app.use("/api/eventos", eventoRouter);
 
 app.listen(PORT, () => {

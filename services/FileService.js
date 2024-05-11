@@ -4,8 +4,11 @@ const DiaService = require("../services/DiaService");
 const HoraService = require("../services/HoraService");
 const EventoService = require("../services/EventoService");
 const EdificioService = require("../services/EdificioService");
+const UsuarioRolService = require("../services/UsuarioRolService");
 const SalaService = require("../services/SalaService");
-const db = require("../db/index")
+const db = require("../db/index");
+const models = require("../db/models");
+const getCurrentDay = require("../utils/getCurrentDay");
 
 const service = new ClaseService();
 const horarioService = new HorarioService();
@@ -14,11 +17,46 @@ const horaService = new HoraService();
 const eventoService = new EventoService();
 const edificioService = new EdificioService();
 const salaService = new SalaService();
+const usuarioRolService = new UsuarioRolService();
 
 class FileService {
-  constructor() { }
+  constructor() {
+    this.currentDay = getCurrentDay();
+  }
 
-  async uploadClases(data) {
+  async createClases(clases, usuario_id) {
+    const clases_db_values = clases
+      .map(
+        (clase) =>
+          `('DEFAULT','${clase.nombre}','${clase.cod_asignatura}','${clase.grupo}','${usuario_id}','APROBADO','${clase.cod_docente}','${this.currentDay}','${this.currentDay}')`
+      )
+      .join(", ");
+
+    await db.query(`INSERT INTO clase VALUES ${clases_db_values}`);
+  }
+
+  getEventToCreate(clases, clasesInDB) {
+    const eventsToCreate = [];
+
+    clases.forEach((clase) => {
+      clase.horario.forEach((horario) => {
+        eventsToCreate.push({
+          clase_id:
+            clasesInDB.find(
+              (x) => x.nombre === clase.nombre && x.grupo === clase.grupo
+            )?.id || null,
+          dia: horario.dia,
+          hora_inicio: horario.hora_inicio,
+          hora_fin: horario.hora_fin,
+          sala: horario.sala,
+        });
+      });
+    });
+
+    return eventsToCreate;
+  }
+
+  async uploadClases(data, usuario_id) {
     let clases = [];
 
     for (let el in data) {
@@ -27,14 +65,87 @@ class FileService {
       }
     }
 
+    await this.createClases(clases, usuario_id);
+    const clasesInDB = await service.find();
+    const edificios = await edificioService.find();
+    const salas = await salaService.find();
+    const horarios = await horarioService.find();
+
+    return new Promise((resolve, reject) => {
+      Promise.all(
+        clases.map((claseElement) => {
+          for (let horarioElement of claseElement.horario) {
+            const edificioName = horarioElement.sala.slice(0, 2);
+            const salaName = horarioElement.sala.slice(2, 5);
+
+            models.Evento.create({
+              nombre: horarioElement.dia,
+              clase_id:
+                clasesInDB.find(
+                  (x) =>
+                    x.nombre === claseElement.nombre &&
+                    x.grupo === claseElement.grupo
+                )?.id || null,
+            }).then((evento) => {
+              const edificio = edificios.find((x) => x.nombre === edificioName);
+
+              if (edificio) {
+                const sala = salas.find(
+                  (x) => x.nombre === salaName && x.edificio_id === edificio.id
+                );
+
+                if (sala) {
+                  const horario = horarios.find((x) => x.sala_id === sala.id);
+
+                  if (horario) {
+                    models.Dia.create({
+                      nombre: horarioElement.dia,
+                      fecha: this.currentDay,
+                      horario_id: horario.id,
+                    }).then((dia) => {
+                      models.Hora.create({
+                        dia_id: dia.id,
+                        hora_inicio: horarioElement.hora_inicio,
+                        hora_fin: horarioElement.hora_fin,
+                        evento_id: evento.id,
+                      });
+                    });
+                  }
+                }
+              }
+            });
+          }
+        })
+      )
+        .then(() => {
+          resolve({ message: "Clases creadas" });
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+
+    // this.createClase(clases, usuario_id);
+    // const clasesInDB = await service.find();
+    // const edificios = await edificioService.find();
+    // const salas = await salaService.find();
+    // const horarios = await horarioService.find();
+
+    // const eventsToCreate = this.getEventToCreate(clases, clasesInDB);
+    // console.log(eventsToCreate);
+    // this.createEvents(eventsToCreate, edificios, salas, horarios);
+
+    // const eventosInDB = await eventoService.find();
+    // console.log(eventosInDB);
+
+    /*
     // Todas las clases creadas
-    const clasesCreadas = [];
+    const clasesCreadas = {};
 
     return new Promise((resolve, reject) => {
       Promise.all(
         clases.map((element) => {
-          return this.validarDisponibilidad(element).then(validos => {
-
+          return this.validarDisponibilidad(element).then((validos) => {
             return service.createFromExcel(element).then((clase) => {
               if (clase && clase.length > 0) {
                 return Promise.all(
@@ -42,10 +153,8 @@ class FileService {
                     const edificioName = el.sala.slice(0, 2);
                     const salaName = el.sala.slice(2, 5);
 
-                    // verificar disponi,,
+                    // Verificar disponibilidad
                     if (!validos[index]) {
-                      console.log("SE CREO LA CLASE CON ID: ", clase.id)
-
                       // Creacion del evento
                       return eventoService
                         .create({
@@ -53,7 +162,6 @@ class FileService {
                           clase_id: clase[0],
                         })
                         .then((evento) => {
-                          console.log("SE CREO el EVENTO CON ID: ", evento.id)
                           return horarioService
                             .findBySala(edificioName, salaName)
                             .then((data) => {
@@ -69,77 +177,80 @@ class FileService {
                                   })
                                   .then((dia) => {
                                     // Creacion de hora
-                                    return horaService
-                                      .create({
-                                        dia_id: dia.id,
-                                        hora_inicio: el.hora_inicio,
-                                        hora_fin: el.hora_fin,
-                                        evento_id: evento.id,
-                                      })
-                                      .then(() => {
-                                        console.log("hora creada");
-                                        clasesCreadas.push(clase[0]);
-                                      });
+                                    return horaService.create({
+                                      dia_id: dia.id,
+                                      hora_inicio: el.hora_inicio,
+                                      hora_fin: el.hora_fin,
+                                      evento_id: evento.id,
+                                    });
                                   });
                               }
                             });
                         });
-                    }else{
-                      console.log("LA HORA YA EXISTE")
                     }
                   })
-                );
+                ).then(() => {
+                  clasesCreadas[clase[0]] = [];
+                });
               }
             });
-
-          })
+          });
         })
       )
         .then(() => {
-          if (clasesCreadas.length === clases.length) {
-            resolve({ clasesCreadas, message: "Clases creadas" });
+          resolve({ clases: clasesCreadas, message: "Clases creadas" });
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+    */
+  }
+
+  validarDisponibilidad(clase) {
+    const horasVerificadas = [];
+
+    return new Promise((resolve, reject) => {
+      Promise.all(
+        clase.horario.map((element) => {
+          return db
+            .query(
+              `
+                SELECT e.id
+                FROM evento e
+                CROSS JOIN (
+                    SELECT h.evento_id
+                    FROM horas h
+                    WHERE (${element.hora_inicio} <= h.hora_inicio AND ${element.hora_fin} > h.hora_inicio)
+                    OR (${element.hora_inicio} < h.hora_fin AND ${element.hora_fin} >= h.hora_fin)
+                    OR (${element.hora_inicio} >= h.hora_inicio AND ${element.hora_fin} <= h.hora_fin)
+                ) AS h_filtrado
+                INNER JOIN dia d ON d.id = h_filtrado.evento_id
+                INNER JOIN horarios ho ON ho.id = d.horario_id
+                INNER JOIN salas s ON s.id = ho.sala_id
+                INNER JOIN edificios ed ON ed.id = s.edificio_id;
+              `
+            )
+            .then((results) => {
+              horasVerificadas.push(results.length === 0);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+      )
+        .then(() => {
+          console.log(horasVerificadas);
+          if (horasVerificadas.length === clase.horario.length) {
+            resolve(horasVerificadas);
           } else {
-            reject(new Error("Error al crear clases"));
+            reject(new Error("Error al verificar las horas"));
           }
         })
         .catch((error) => {
           reject(error);
         });
     });
-  }
-
-  validarDisponibilidad(clase) {
-    const horasVerificadas = []
-    return new Promise((resolve, reject) => {
-      Promise.all(
-        clase.horario.map((element) => {
-          return db.query(`
-            SELECT e.id FROM evento e
-            INNER JOIN horas h ON h.evento_id = e.id
-            INNER JOIN dia d ON d.id = h.dia_id
-            INNER JOIN horarios ho ON ho.id = d.horario_id
-            INNER JOIN salas s ON s.id = ho.sala_id
-            INNER JOIN edificios ed ON ed.id = s.edificio_id
-            WHERE h.hora_inicio <= ${element.hora_inicio} AND h.hora_fin > ${element.hora_inicio}
-            OR h.hora_inicio < ${element.hora_fin} AND h.hora_fin >= ${element.hora_fin}
-          `).then(results => {
-            horasVerificadas.push(results.length === 0)
-          }).catch(error => {
-            console.log(error)
-          })
-        })
-      ).then(() => {
-        console.log(horasVerificadas)
-        if (horasVerificadas.length === clase.horario.length) {
-          resolve(horasVerificadas);
-        } else {
-          reject(new Error("Error al verificar las horas"));
-        }
-      })
-        .catch((error) => {
-          reject(error);
-        });
-    })
   }
 
   getClases(data) {
@@ -295,9 +406,9 @@ class FileService {
     }
   }
 
-  async update(id, data) { }
+  async update(id, data) {}
 
-  async delete(id) { }
+  async delete(id) {}
 }
 
 module.exports = FileService;

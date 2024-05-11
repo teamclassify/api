@@ -19,16 +19,16 @@ const verifyIsAdmin = async (req) => {
     rol_id: rolAdmin[0].id,
   });
 
-  return results.length > 0;
+  return [results.length > 0, results[0].id];
 };
 
 const uploadClases = async (req, res) => {
   try {
-    const isAdmin = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
 
     if (isAdmin) {
       const excelData = excelToJson(req.file);
-      const response = await service.uploadClases(excelData);
+      const response = await service.uploadClases(excelData, usuario_id);
       res.json({ success: true, data: response });
     } else {
       res
@@ -42,11 +42,11 @@ const uploadClases = async (req, res) => {
 
 const uploadSalas = async (req, res) => {
   try {
-    const isAdmin = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
 
     if (isAdmin) {
       const excelData = excelToJson(req.file);
-      const response = await service.uploadSalas(excelData);
+      const response = await service.uploadSalas(excelData, usuario_id);
       res.json({ success: true, data: response });
     } else {
       res
@@ -60,7 +60,7 @@ const uploadSalas = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const isAdmin = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
 
     if (!isAdmin) {
       res
@@ -77,7 +77,7 @@ const update = async (req, res) => {
 
 const _delete = async (req, res) => {
   try {
-    const isAdmin = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
 
     if (!isAdmin) {
       res

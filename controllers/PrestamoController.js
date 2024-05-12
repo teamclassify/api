@@ -30,6 +30,15 @@ const get = async (req, res) => {
   }
 };
 
+const getAllPending = async (req, res) => {
+  try {
+    const response = await service.findAllPending();
+    res.status(200).json({ sucess: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
 const getById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -67,4 +76,5 @@ module.exports = {
   getById,
   update,
   _delete,
+  getAllPending,
 };

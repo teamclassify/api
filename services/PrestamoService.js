@@ -53,6 +53,18 @@ class PrestamoService {
     });
   }
 
+  async findAllPending() {
+    const res = await db.query(`
+      SELECT p.id, p.razon, p.estado, p.cantidad_personas, p.hora_inicio, p.hora_fin, p.fecha, s.nombre as sala, e.nombre as edificio
+      FROM prestamo p
+      INNER JOIN salas s ON s.id = p.sala_id
+      INNER JOIN edificios e ON e.id = s.edificio_id
+      WHERE p.estado = 'PENDIENTE'
+    `);
+
+    return res.length > 0 ? res[0] : null;
+  }
+
   async create(data, uid) {
     return usuarioRolService.find({ usuario_id: uid }).then((user) => {
       if (!user || user.length === 0) {

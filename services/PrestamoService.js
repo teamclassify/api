@@ -19,8 +19,15 @@ class PrestamoService {
   }
 
   async findOne(id) {
-    const res = await models.Prestamo.findByPk(id);
-    return res;
+    const [res] = await db.query(`
+      SELECT p.id, p.razon, p.estado, p.cantidad_personas, p.hora_inicio, p.hora_fin, p.fecha, s.nombre as sala, e.nombre as edificio
+      FROM prestamo p
+      INNER JOIN salas s ON s.id = p.sala_id
+      INNER JOIN edificios e ON e.id = s.edificio_id
+      WHERE p.id = ${id}
+    `);
+
+    return res.length > 0 ? res[0] : null;
   }
 
   async getAllByUserWithRelations(id) {

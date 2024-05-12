@@ -15,19 +15,6 @@ class EventoService {
   }
 
   async findBySala(sala_id) {
-    // const [results] = await db.query(
-    //   `SELECT e.id, c.cod_asignatura, h.hora_inicio, h.hora_fin, c.nombre, d.nombre as dia , s.nombre as sala
-    //   FROM evento e
-    //   INNER JOIN horas h ON h.evento_id = e.id
-    //   INNER JOIN dia d ON h.dia_id  = d.id
-    //   INNER JOIN horarios h2 ON d.horario_id = h2.id
-    //   INNER JOIN salas s ON s.id  = h2.sala_id
-    //   INNER JOIN clase c ON c.id = e.clase_id
-    //   INNER JOIN prestamo p ON p.id = e.prestamo_id
-    //   WHERE p.estado = 'APROBADO' AND c.estado = 'APROBADO' AND s.id = ${sala_id}
-    //   `
-    // );
-
     const [results] = await db.query(
       `(SELECT e.id, c.cod_asignatura, h.hora_inicio, h.hora_fin, c.nombre,
         d.nombre as dia , s.nombre as sala, c.estado, c.cod_docente, 'clase' as tipo, s.capacidad as cantidad_personas
@@ -47,6 +34,46 @@ class EventoService {
       INNER JOIN evento e ON h.evento_id = e.id
       INNER JOIN prestamo p ON e.prestamo_id = p.id
       WHERE p.estado = 'APROBADO' AND s.id = ${sala_id})
+      `
+    );
+
+    return results;
+  }
+
+  async findBySalaAndRangeHours(sala_id, fecha, start_hour, end_hour) {
+    const dias = [
+      "domingo",
+      "lunes",
+      "martes",
+      "miercoles",
+      "jueves",
+      "viernes",
+      "sabado",
+    ];
+    const dia = new Date(fecha).getDay();
+    const diaNombre = dias[dia + 1];
+
+    const [results] = await db.query(
+      `SELECT e.id, h.hora_inicio, h.hora_fin,
+        d.nombre as dia , s.nombre as sala, s.capacidad as cantidad_personas
+      FROM salas s
+      INNER JOIN horarios h2 ON s.id = h2.sala_id
+      INNER JOIN dia d ON h2.id = d.horario_id
+      INNER JOIN horas h ON d.id = h.dia_id
+      INNER JOIN evento e ON h.evento_id = e.id
+      WHERE s.id = ${sala_id}
+      
+      AND (
+        (h.hora_inicio = ${start_hour})
+        OR
+        (h.hora_inicio = ${start_hour} AND h.hora_fin = ${end_hour})
+        OR
+        (h.hora_inicio >= ${start_hour} AND h.hora_inicio <= ${end_hour})
+        OR
+        (h.hora_fin >= ${start_hour} AND h.hora_fin <= ${end_hour})
+      )
+
+      AND d.nombre = '${diaNombre}' OR d.fecha = '${fecha}'
       `
     );
 

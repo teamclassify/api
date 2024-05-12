@@ -1,8 +1,6 @@
 const PrestamoService = require("../services/PrestamoService");
-const UsuarioRolService = require("../services/UsuarioRolService");
 
 const service = new PrestamoService();
-const usuarioRolService = new UsuarioRolService();
 
 const create = async (req, res) => {
   if (

@@ -1,17 +1,17 @@
 const UserService = require("../services/UserService");
 const UsuarioRolService = require("../services/UsuarioRolService");
 const RolService = require("../services/RolService");
-const verifyIsAdmin = require("../utils/verifyIsAdmin");
+const { verifyIsSuperAdmin } = require("../utils/verifyIsAdmin");
 
 const service = new UserService();
 const usuarioRolService = new UsuarioRolService();
 const rolService = new RolService();
 
 async function get(req, res) {
-  const [isAdmin] = await verifyIsAdmin(req.uid);
+  const [isAdmin] = await verifyIsSuperAdmin(req.uid);
 
   if (!isAdmin) {
-    res
+    return res
       .status(401)
       .json({ success: false, data: "Este usuario no tiene permisos" });
   }
@@ -42,10 +42,10 @@ async function get(req, res) {
 }
 
 async function getById(req, res) {
-  const [isAdmin] = await verifyIsAdmin(req.uid);
+  const [isAdmin] = await verifyIsSuperAdmin(req.uid);
 
   if (!isAdmin) {
-    res
+    return res
       .status(401)
       .json({ success: false, data: "Este usuario no tiene permisos" });
   }
@@ -71,7 +71,7 @@ async function getById(req, res) {
 }
 
 async function setRole(req, res) {
-  const [isAdmin] = await verifyIsAdmin(req.uid);
+  const [isAdmin] = await verifyIsSuperAdmin(req.uid);
 
   if (!isAdmin) {
     res

@@ -1,6 +1,6 @@
 const FileService = require("../services/FileService");
 const excelToJson = require("../utils/excelToJson");
-const verifyIsAdmin = require("../utils/verifyIsAdmin");
+const { verifyIsAdmin } = require("../utils/verifyIsAdmin");
 
 const service = new FileService();
 
@@ -40,9 +40,9 @@ const uploadClases = async (req, res) => {
       }
 
       const response = await service.uploadClases(excelData, usuario_id);
-      res.json({ success: true, data: response });
+      return res.json({ success: true, data: response });
     } else {
-      res
+      return res
         .status(401)
         .json({ success: false, data: "Este usuario no tiene permisos" });
     }
@@ -87,9 +87,9 @@ const uploadSalas = async (req, res) => {
       }
 
       const response = await service.uploadSalas(excelData, usuario_id);
-      res.json({ success: true, data: response });
+      return res.json({ success: true, data: response });
     } else {
-      res
+      return res
         .status(401)
         .json({ success: false, data: "Este usuario no tiene permisos" });
     }
@@ -100,10 +100,10 @@ const uploadSalas = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const [isAdmin, usuario_id] = await verifyIsAdmin(req.uid);
+    const [isAdmin] = await verifyIsAdmin(req.uid);
 
     if (!isAdmin) {
-      res
+      return res
         .status(401)
         .json({ success: false, data: "Este usuario no tiene permisos" });
     }
@@ -117,10 +117,10 @@ const update = async (req, res) => {
 
 const _delete = async (req, res) => {
   try {
-    const [isAdmin, usuario_id] = await verifyIsAdmin(req.uid);
+    const [isAdmin] = await verifyIsAdmin(req.uid);
 
     if (!isAdmin) {
-      res
+      return res
         .status(401)
         .json({ success: false, data: "Este usuario no tiene permisos" });
     }

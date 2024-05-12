@@ -1,30 +1,12 @@
 const FileService = require("../services/FileService");
 const excelToJson = require("../utils/excelToJson");
-const RolService = require("../services/RolService");
-const UsuarioRolService = require("../services/UsuarioRolService");
+const verifyIsAdmin = require("../utils/verifyIsAdmin");
 
 const service = new FileService();
-const usuarioRolService = new UsuarioRolService();
-const rolService = new RolService();
-
-const verifyIsAdmin = async (req) => {
-  const rolAdmin = await rolService.find({ nombre: "admin" });
-
-  if (rolAdmin.length === 0) {
-    return false;
-  }
-
-  const results = await usuarioRolService.find({
-    usuario_id: req.uid,
-    rol_id: rolAdmin[0].id,
-  });
-
-  return [results.length > 0, results[0].id];
-};
 
 const uploadClases = async (req, res) => {
   try {
-    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req.uid);
 
     if (isAdmin) {
       const excelData = excelToJson(req.file);
@@ -71,7 +53,7 @@ const uploadClases = async (req, res) => {
 
 const uploadSalas = async (req, res) => {
   try {
-    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req.uid);
 
     if (isAdmin) {
       const excelData = excelToJson(req.file);
@@ -118,7 +100,7 @@ const uploadSalas = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req.uid);
 
     if (!isAdmin) {
       res
@@ -135,7 +117,7 @@ const update = async (req, res) => {
 
 const _delete = async (req, res) => {
   try {
-    const [isAdmin, usuario_id] = await verifyIsAdmin(req);
+    const [isAdmin, usuario_id] = await verifyIsAdmin(req.uid);
 
     if (!isAdmin) {
       res

@@ -8,9 +8,10 @@ const create = async (req, res) => {
     !req.body.fecha ||
     !req.body.hora_fin ||
     !req.body.hora_inicio ||
-    !req.body.cantidad_personas
+    !req.body.cantidad_personas ||
+    !req.body.sala_id
   ) {
-    return res.status(400).send({ success: false, message: "Faltan datos" });
+    return res.status(400).send({ success: false, message: "Faltan datos del prestamo" });
   }
 
   try {

@@ -68,9 +68,9 @@ class EventoService {
         OR
         (h.hora_inicio = ${start_hour} AND h.hora_fin = ${end_hour})
         OR
-        (h.hora_inicio >= ${start_hour} AND h.hora_inicio <= ${end_hour})
+        (h.hora_inicio >= ${start_hour} AND h.hora_inicio < ${end_hour})
         OR
-        (h.hora_fin >= ${start_hour} AND h.hora_fin <= ${end_hour})
+        (h.hora_fin > ${start_hour} AND h.hora_fin <= ${end_hour})
       )
 
       AND d.nombre = '${diaNombre}' OR d.fecha = '${fecha}'

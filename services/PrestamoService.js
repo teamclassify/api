@@ -1,8 +1,10 @@
 const db = require("../db");
 const models = require("../db/models");
 const UsuarioRolService = require("./UsuarioRolService");
+const EventoService = require("./EventoService");
 
 const usuarioRolService = new UsuarioRolService();
+const eventoService = new EventoService();
 
 class PrestamoService {
   constructor() {}
@@ -71,21 +73,34 @@ class PrestamoService {
         throw new Error("Usuario no encontrado");
       }
 
-      return models.Prestamo.create({
-        usuario_id: user[0].id,
-        razon: data.razon,
-        estado: "PENDIENTE",
-        cantidad_personas: data.cantidad_personas,
-        hora_inicio: data.hora_inicio,
-        hora_fin: data.hora_fin,
-        fecha: data.fecha,
-        sala_id: data.sala_id,
-      })
-        .then((prestamo) => {
-          return prestamo;
-        })
-        .catch((error) => {
-          throw new Error(error);
+      return eventoService
+        .findBySalaAndRangeHours(
+          data.sala_id,
+          data.fecha,
+          data.hora_inicio,
+          data.hora_fin
+        )
+        .then((eventos) => {
+          if (eventos.length > 0) {
+            throw new Error("Ya hay un evento en ese rango de horas");
+          }
+
+          return models.Prestamo.create({
+            usuario_id: user[0].id,
+            razon: data.razon,
+            estado: "PENDIENTE",
+            cantidad_personas: data.cantidad_personas,
+            hora_inicio: data.hora_inicio,
+            hora_fin: data.hora_fin,
+            fecha: data.fecha,
+            sala_id: data.sala_id,
+          })
+            .then((prestamo) => {
+              return prestamo;
+            })
+            .catch((error) => {
+              throw new Error(error);
+            });
         });
     });
   }

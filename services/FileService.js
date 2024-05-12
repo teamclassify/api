@@ -99,8 +99,8 @@ class FileService {
 
                   if (horario) {
                     models.Dia.create({
-                      nombre: horarioElement.dia,
-                      fecha: this.currentDay,
+                      nombre: horarioElement.dia.toLowerCase(),
+                      fecha: "NULL",
                       horario_id: horario.id,
                     }).then((dia) => {
                       models.Hora.create({
@@ -124,87 +124,6 @@ class FileService {
           reject(error);
         });
     });
-
-    // this.createClase(clases, usuario_id);
-    // const clasesInDB = await service.find();
-    // const edificios = await edificioService.find();
-    // const salas = await salaService.find();
-    // const horarios = await horarioService.find();
-
-    // const eventsToCreate = this.getEventToCreate(clases, clasesInDB);
-    // console.log(eventsToCreate);
-    // this.createEvents(eventsToCreate, edificios, salas, horarios);
-
-    // const eventosInDB = await eventoService.find();
-    // console.log(eventosInDB);
-
-    /*
-    // Todas las clases creadas
-    const clasesCreadas = {};
-
-    return new Promise((resolve, reject) => {
-      Promise.all(
-        clases.map((element) => {
-          return this.validarDisponibilidad(element).then((validos) => {
-            return service.createFromExcel(element).then((clase) => {
-              if (clase && clase.length > 0) {
-                return Promise.all(
-                  element.horario.map((el, index) => {
-                    const edificioName = el.sala.slice(0, 2);
-                    const salaName = el.sala.slice(2, 5);
-
-                    // Verificar disponibilidad
-                    if (!validos[index]) {
-                      // Creacion del evento
-                      return eventoService
-                        .create({
-                          nombre: el.dia,
-                          clase_id: clase[0],
-                        })
-                        .then((evento) => {
-                          return horarioService
-                            .findBySala(edificioName, salaName)
-                            .then((data) => {
-                              if (data.length > 0) {
-                                const horario = data[0].horario;
-
-                                // Creacion del dia
-                                return diaService
-                                  .create({
-                                    nombre: el.dia,
-                                    fecha: new Date(),
-                                    horario_id: horario,
-                                  })
-                                  .then((dia) => {
-                                    // Creacion de hora
-                                    return horaService.create({
-                                      dia_id: dia.id,
-                                      hora_inicio: el.hora_inicio,
-                                      hora_fin: el.hora_fin,
-                                      evento_id: evento.id,
-                                    });
-                                  });
-                              }
-                            });
-                        });
-                    }
-                  })
-                ).then(() => {
-                  clasesCreadas[clase[0]] = [];
-                });
-              }
-            });
-          });
-        })
-      )
-        .then(() => {
-          resolve({ clases: clasesCreadas, message: "Clases creadas" });
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-    */
   }
 
   validarDisponibilidad(clase) {

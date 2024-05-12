@@ -28,6 +28,35 @@ const uploadClases = async (req, res) => {
 
     if (isAdmin) {
       const excelData = excelToJson(req.file);
+      let fileAllowed = true;
+
+      // check if the excel file has the correct structure
+      for (let el in excelData) {
+        if (!fileAllowed) {
+          break;
+        }
+
+        if (excelData[el].length > 0) {
+          excelData[el].every((element) => {
+            if (
+              !element.hasOwnProperty("Codigo materia") ||
+              !element.hasOwnProperty("Alu max") ||
+              !element.hasOwnProperty("Alu mat") ||
+              !element.hasOwnProperty("Nombre materia")
+            ) {
+              fileAllowed = false;
+            }
+          });
+        }
+      }
+
+      if (!fileAllowed) {
+        return res.status(400).json({
+          success: false,
+          data: "La estructura del archivo no es correcta",
+        });
+      }
+
       const response = await service.uploadClases(excelData, usuario_id);
       res.json({ success: true, data: response });
     } else {
@@ -46,6 +75,35 @@ const uploadSalas = async (req, res) => {
 
     if (isAdmin) {
       const excelData = excelToJson(req.file);
+      let fileAllowed = true;
+
+      // check if the excel file has the correct structure
+      for (let el in excelData) {
+        if (!fileAllowed) {
+          break;
+        }
+
+        if (excelData[el].length > 0) {
+          excelData[el].every((element) => {
+            if (
+              !element.hasOwnProperty("Edificio") ||
+              !element.hasOwnProperty("Sala") ||
+              !element.hasOwnProperty("Capacidad") ||
+              !element.hasOwnProperty("Cantidad Computadores")
+            ) {
+              fileAllowed = false;
+            }
+          });
+        }
+      }
+
+      if (!fileAllowed) {
+        return res.status(400).json({
+          success: false,
+          data: "La estructura del archivo no es correcta",
+        });
+      }
+
       const response = await service.uploadSalas(excelData, usuario_id);
       res.json({ success: true, data: response });
     } else {

@@ -82,43 +82,51 @@ class PrestamoService {
     @param {Number} uid user id
   */
   async create(data, uid) {
-    return usuarioRolService.find({ usuario_id: uid }).then((user) => {
-      if (!user || user.length === 0) {
-        throw new Error("Usuario no encontrado");
-      }
+    return usuarioRolService
+      .find({ usuario_id: uid })
+      .then((user) => {
+        if (!user || user.length === 0) {
+          throw new Error("Usuario no encontrado");
+        }
 
-      return eventoService
-        .findBySalaAndRangeHours(
-          data.sala_id,
-          data.fecha,
-          data.hora_inicio,
-          data.hora_fin
-        )
-        .then((eventos) => {
-          console.log(eventos);
+        return eventoService
+          .findBySalaAndRangeHours(
+            data.sala_id,
+            data.fecha,
+            data.hora_inicio,
+            data.hora_fin
+          )
+          .then((eventos) => {
+            console.log(eventos);
 
-          if (eventos.length > 0) {
-            throw new Error("Ya hay un evento en ese rango de horas");
-          }
+            if (eventos.length > 0) {
+              throw new Error("Ya hay un evento en ese rango de horas");
+            }
 
-          return models.Prestamo.create({
-            usuario_id: user[0].id,
-            razon: data.razon,
-            estado: "PENDIENTE",
-            cantidad_personas: data.cantidad_personas,
-            hora_inicio: data.hora_inicio,
-            hora_fin: data.hora_fin,
-            fecha: data.fecha,
-            sala_id: data.sala_id,
-          })
-            .then((prestamo) => {
-              return prestamo;
+            return models.Prestamo.create({
+              usuario_id: user[0].id,
+              razon: data.razon,
+              estado: "PENDIENTE",
+              cantidad_personas: data.cantidad_personas,
+              hora_inicio: data.hora_inicio,
+              hora_fin: data.hora_fin,
+              fecha: data.fecha,
+              sala_id: data.sala_id,
             })
-            .catch((error) => {
-              throw new Error(error);
-            });
-        });
-    });
+              .then((prestamo) => {
+                return prestamo;
+              })
+              .catch((error) => {
+                throw new Error(error.message);
+              });
+          })
+          .catch((error) => {
+            throw new Error(error.message);
+          });
+      })
+      .catch((error) => {
+        throw new Error(error.message);
+      });
   }
 
   async update(id, data) {

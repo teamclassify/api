@@ -16,6 +16,7 @@ const prestamo = db.define(
     fecha: { type: sequelize.DATE },
     cantidad_personas: { type: sequelize.INTEGER },
     sala_id: { type: sequelize.INTEGER },
+    recursos: { type: sequelize.STRING },
   },
   {
     freezeTableName: true,

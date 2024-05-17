@@ -20,6 +20,9 @@ class PrestamoService {
     return res;
   }
 
+  /*
+    Get prestamo with sala and edificio relations by id
+  */
   async findOne(id) {
     const [res] = await db.query(`
       SELECT p.id, p.razon, p.estado, p.cantidad_personas, p.hora_inicio, p.hora_fin, p.fecha, s.nombre as sala, e.nombre as edificio
@@ -32,6 +35,9 @@ class PrestamoService {
     return res.length > 0 ? res[0] : null;
   }
 
+  /*
+    Get all prestamos with sala and edificio relations by user id
+  */
   async getAllByUserWithRelations(id) {
     // obtener todos los prestamos de un usuario y su sala y edificio
     return usuarioRolService.find({ usuario_id: id }).then((user) => {
@@ -55,6 +61,9 @@ class PrestamoService {
     });
   }
 
+  /*
+    Get all prestamos with sala and edificio relations
+  */
   async findAllPending() {
     const res = await db.query(`
       SELECT p.id, p.razon, p.estado, p.cantidad_personas, p.hora_inicio, p.hora_fin, p.fecha, s.nombre as sala, e.nombre as edificio
@@ -67,6 +76,11 @@ class PrestamoService {
     return res.length > 0 ? res[0] : null;
   }
 
+  /*
+    Create new prestamo with user id
+    @param {Object} data prestamo data
+    @param {Number} uid user id
+  */
   async create(data, uid) {
     return usuarioRolService.find({ usuario_id: uid }).then((user) => {
       if (!user || user.length === 0) {
@@ -81,6 +95,8 @@ class PrestamoService {
           data.hora_fin
         )
         .then((eventos) => {
+          console.log(eventos);
+
           if (eventos.length > 0) {
             throw new Error("Ya hay un evento en ese rango de horas");
           }

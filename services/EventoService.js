@@ -42,16 +42,24 @@ class EventoService {
 
   async findBySalaAndRangeHours(sala_id, fecha, start_hour, end_hour) {
     const dias = [
-      "domingo",
       "lunes",
       "martes",
       "miercoles",
       "jueves",
       "viernes",
       "sabado",
+      "domingo",
     ];
     const dia = new Date(fecha).getDay();
-    const diaNombre = dias[dia + 1];
+    const diaNombre = dias[dia];
+
+    if (diaNombre === "domingo") {
+      throw new Error("No se puede reservar en fin de semana");
+    }
+
+    if (!diaNombre) {
+      throw new Error("Fecha no válida");
+    }
 
     const [results] = await db.query(
       `SELECT e.id, h.hora_inicio, h.hora_fin,

@@ -259,7 +259,10 @@ class FileService {
               .create({
                 nombre: edificio,
               })
-              .then(() => edificiosCreados.push(edificio.id));
+              .then(() => edificiosCreados.push(edificio.id))
+              .catch((error) => {
+                rejectEdificio("Error al crear los edificios, ya existen");
+              });
           })
         )
           .then(() => {
@@ -281,34 +284,28 @@ class FileService {
                         .then((sala) => {
                           salasCreadas.push(sala.id);
 
-                          return horarioService
-                            .create({
-                              sala_id: sala.id,
-                            })
-                            .then(() => {
-                              console.log("horario creado");
-                            });
+                          return horarioService.create({
+                            sala_id: sala.id,
+                          });
+                        }).catch((error) => {
+                          rejectEdificio("Error al crear las salas, ya existen");
                         });
                     });
                 })
               )
                 .then(() => {
-                  console.log("salas: ", salas.length);
-                  console.log("Sala creadsa: ", salasCreadas.length);
                   if (salasCreadas.length === salas.length) {
-                    resolve({ salasCreadas, message: "Salas creadas" });
+                    resolveEdificio({ salasCreadas, message: "Salas creadas" });
                   } else {
-                    reject(new Error("Error al crear las salas"));
+                    rejectEdificio(new Error("Error al crear las salas"));
                   }
                 })
                 .catch((error) => {
-                  reject(error);
+                  rejectEdificio(error);
                 });
             });
           })
           .then(() => {
-            console.log("Edificios: ", edificios.length);
-            console.log("Edificios creados: ", edificiosCreados.length);
             if (edificiosCreados.length === edificios.length) {
               resolveEdificio({
                 edificiosCreados,
@@ -317,9 +314,6 @@ class FileService {
             } else {
               rejectEdificio(new Error("Error al crear las salas y edificios"));
             }
-          })
-          .catch((error) => {
-            reject(error);
           });
       });
     }

@@ -94,7 +94,7 @@ const uploadSalas = async (req, res) => {
         .json({ success: false, data: "Este usuario no tiene permisos" });
     }
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
+    res.status(500).send({ success: false, data: error });
   }
 };
 

@@ -260,9 +260,7 @@ class FileService {
                 nombre: edificio,
               })
               .then(() => edificiosCreados.push(edificio.id))
-              .catch((error) => {
-                rejectEdificio("Error al crear los edificios, ya existen");
-              });
+              .catch((error) => {});
           })
         )
           .then(() => {
@@ -287,8 +285,11 @@ class FileService {
                           return horarioService.create({
                             sala_id: sala.id,
                           });
-                        }).catch((error) => {
-                          rejectEdificio("Error al crear las salas, ya existen");
+                        })
+                        .catch((error) => {
+                          rejectEdificio(
+                            "Error al crear las salas, ya existen"
+                          );
                         });
                     });
                 })

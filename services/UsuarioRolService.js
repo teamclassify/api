@@ -19,6 +19,17 @@ class UsuarioRolService {
     return res;
   }
 
+  async findWithRelations(uid) {
+    const [res] = await db.query(`
+      SELECT u.nombre, u.correo, u.id
+      FROM usuario_rols ur
+      INNER JOIN usuario u ON u.id = ur.usuario_id
+      WHERE ur.usuario_id = ${uid}
+    `);
+
+    return res.length > 0 ? res[0] : null;
+  }
+
   async create(data) {
     const user = await models.UsuarioRol.create(data);
     return user;

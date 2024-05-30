@@ -27,6 +27,7 @@ const login = async (req, res) => {
                     id: userCreated.id,
                     roles: [rol.nombre],
                     nombre: userCreated.nombre,
+                    photo: userCreated.photo,
                     codigo: userCreated.codigo,
                     correo: userCreated.correo,
                     createdAt: userCreated.createdAt,
@@ -66,6 +67,7 @@ const login = async (req, res) => {
                 data: {
                   id: user.id,
                   roles: data,
+                  photo: user.photo,
                   nombre: user.nombre,
                   codigo: user.codigo,
                   correo: user.correo,

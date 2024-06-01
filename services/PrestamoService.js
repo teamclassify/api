@@ -25,10 +25,24 @@ class PrestamoService {
   */
   async findOne(id) {
     const [res] = await db.query(`
-      SELECT p.id, p.razon, p.estado, p.cantidad_personas, p.hora_inicio, p.hora_fin, p.fecha, s.nombre as sala, e.nombre as edificio
+      SELECT
+        p.id,
+        p.razon,
+        p.estado,
+        p.cantidad_personas,
+        p.hora_inicio,
+        p.hora_fin,
+        p.fecha,
+        s.nombre as sala,
+        e.nombre as edificio,
+        u.nombre as usuario_nombre,
+        u.correo as usuario_correo,
+        ur.rol_id as usuario_rol
       FROM prestamo p
       INNER JOIN salas s ON s.id = p.sala_id
       INNER JOIN edificios e ON e.id = s.edificio_id
+      INNER JOIN usuario_rols ur ON ur.id = p.usuario_id
+      INNER JOIN usuario u ON u.id = ur.usuario_id
       WHERE p.id = ${id}
     `);
 
@@ -66,12 +80,74 @@ class PrestamoService {
   */
   async findAllPending() {
     const res = await db.query(`
-      SELECT p.id, p.razon, p.estado, p.cantidad_personas, p.hora_inicio, p.hora_fin, p.fecha, s.nombre as sala, e.nombre as edificio, p.recursos
+      SELECT
+        p.id,
+        p.razon,
+        p.estado,
+        p.cantidad_personas,
+        p.hora_inicio,
+        p.hora_fin,
+        p.fecha,
+        s.nombre as sala,
+        s.id as sala_id,
+        e.nombre as edificio,
+        p.recursos,
+        u.username as usuario_username,
+        u.nombre as usuario_nombre,
+        u.correo as usuario_correo,
+        u.photo as usuario_photo,
+        ur.rol_id as usuario_rol
       FROM prestamo p
       INNER JOIN salas s ON s.id = p.sala_id
       INNER JOIN edificios e ON e.id = s.edificio_id
+      INNER JOIN usuario_rols ur ON ur.id = p.usuario_id
+      INNER JOIN usuario u ON u.id = ur.usuario_id
       WHERE p.estado = 'PENDIENTE'
+      ORDER BY p.id;
     `);
+
+    return res.length > 0 ? res[0] : null;
+  }
+
+  /*
+    Get all prestamos with sala and edificio relations with filters
+  */
+  async findAllByFilters(filters = [], reason = "") {
+    const res = await db.query(`
+        SELECT
+          p.id,
+          p.razon,
+          p.estado,
+          p.cantidad_personas,
+          p.hora_inicio,
+          p.hora_fin,
+          p.fecha,
+          s.nombre as sala,
+          s.id as sala_id,
+          e.nombre as edificio,
+          p.recursos,
+          u.username as usuario_username,
+          u.nombre as usuario_nombre,
+          u.correo as usuario_correo,
+          u.photo as usuario_photo,
+          ur.rol_id as usuario_rol
+        FROM prestamo p
+        INNER JOIN salas s ON s.id = p.sala_id
+        INNER JOIN edificios e ON e.id = s.edificio_id
+        INNER JOIN usuario_rols ur ON ur.id = p.usuario_id
+        INNER JOIN usuario u ON u.id = ur.usuario_id
+        ${
+          filters.length > 0
+            ? `WHERE (${filters
+                .map((filter) => {
+                  return `${filter.name} = '${filter.value}'`;
+                })
+                .join(" OR ")}) AND`
+            : "WHERE"
+        }
+        p.razon LIKE '%${reason}%'
+        ORDER BY p.id;
+      `);
 
     return res.length > 0 ? res[0] : null;
   }

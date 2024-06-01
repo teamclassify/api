@@ -7,7 +7,9 @@ const user = db.define(
     id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     codigo: { type: sequelize.INTEGER },
     nombre: { type: sequelize.STRING },
-    correo: { type: sequelize.STRING }
+    correo: { type: sequelize.STRING },
+    photo: { type: sequelize.STRING },
+    username: { type: sequelize.STRING }
   },
   {
     freezeTableName: true,

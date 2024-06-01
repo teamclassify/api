@@ -13,8 +13,14 @@ const login = async (req, res) => {
   try {
     return service.findOne(req.uid).then((user) => {
       if (!user) {
+        const username = req.body.correo.split("@")[0] ?? null;
+
+        if (!username) {
+          throw new Error("Error al crear el username del usuario.");
+        }
+
         return service
-          .create({ ...req.body, id: req.uid, codigo: "" })
+          .create({ ...req.body, id: req.uid, codigo: "", username })
           .then((userCreated) => {
             return models.UsuarioRol.create({
               rol_id: 1,
@@ -27,10 +33,12 @@ const login = async (req, res) => {
                     id: userCreated.id,
                     roles: [rol.nombre],
                     nombre: userCreated.nombre,
+                    photo: userCreated.photo,
                     codigo: userCreated.codigo,
                     correo: userCreated.correo,
                     createdAt: userCreated.createdAt,
                     updatedAt: userCreated.updatedAt,
+                    username: userCreated.username,
                   },
                 });
               });
@@ -66,11 +74,13 @@ const login = async (req, res) => {
                 data: {
                   id: user.id,
                   roles: data,
+                  photo: user.photo,
                   nombre: user.nombre,
                   codigo: user.codigo,
                   correo: user.correo,
                   createdAt: user.createdAt,
                   updatedAt: user.updatedAt,
+                  username: user.username,
                 },
               });
             });

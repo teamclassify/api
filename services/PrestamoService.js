@@ -79,8 +79,6 @@ class PrestamoService {
     Get all prestamos with sala and edificio relations
   */
   async findAllPending() {
-    const filters = "";
-
     const res = await db.query(`
       SELECT
         p.id,
@@ -114,7 +112,7 @@ class PrestamoService {
   /*
     Get all prestamos with sala and edificio relations with filters
   */
-  async findAllByFilters(filters, reason) {
+  async findAllByFilters(filters = [], reason = "") {
     const res = await db.query(`
         SELECT
           p.id,

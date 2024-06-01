@@ -6,6 +6,7 @@ const verifyToken = require("../middlewares/verifyToken");
 
 router
   .get("/", verifyToken, prestamoController.get)
+  .get("/user", verifyToken, prestamoController.getByUser)
   .get("/pending", verifyToken, prestamoController.getAllPending)
   .get("/:id", verifyToken, prestamoController.getById)
   .post("/", verifyToken,prestamoController.create)

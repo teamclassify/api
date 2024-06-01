@@ -11,7 +11,9 @@ const create = async (req, res) => {
     !req.body.cantidad_personas ||
     !req.body.sala_id
   ) {
-    return res.status(400).send({ success: false, message: "Faltan datos del prestamo" });
+    return res
+      .status(400)
+      .send({ success: false, message: "Faltan datos del prestamo" });
   }
 
   try {
@@ -23,8 +25,34 @@ const create = async (req, res) => {
 };
 
 const get = async (req, res) => {
+  const filters = req.query.estado
+    ? req.query.estado.split(",").map((itemState) => {
+        return {
+          name: "p.estado",
+          value: itemState,
+        };
+      })
+    : [];
+
+  const reason = req.query.razon ?? "";
+
   try {
-    const response = await service.getAllByUserWithRelations(req.uid);
+    const response = await service.findAllByFilters(filters, reason);
+    res.status(200).json({ sucess: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
+const getByUser = async (req, res) => {
+  try {
+    const response = await service.findAllByFilters([
+      {
+        name: "u.id",
+        value: req.uid,
+      },
+    ]);
+
     res.status(200).json({ sucess: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
@@ -77,5 +105,6 @@ module.exports = {
   getById,
   update,
   _delete,
+  getByUser,
   getAllPending,
 };

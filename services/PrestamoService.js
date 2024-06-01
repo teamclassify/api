@@ -138,11 +138,11 @@ class PrestamoService {
         INNER JOIN usuario u ON u.id = ur.usuario_id
         ${
           filters.length > 0
-            ? `WHERE ${filters
+            ? `WHERE (${filters
                 .map((filter) => {
                   return `${filter.name} = '${filter.value}'`;
                 })
-                .join(" OR ")} AND`
+                .join(" OR ")}) AND`
             : "WHERE"
         }
         p.razon LIKE '%${reason}%'

@@ -7,6 +7,8 @@ const roomResources = db.define(
     id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     nombre: { type: sequelize.STRING },
     descripcion: { type: sequelize.STRING },
+    activo: { type: sequelize.BOOLEAN, default: true },
+    img: { type: sequelize.STRING },
   },
   {
     timestamps: false,

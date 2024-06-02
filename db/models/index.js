@@ -24,6 +24,6 @@ models.Clase = claseModel;
 models.Prestamo = prestamoModel;
 models.Hora = horaModel;
 models.Dia = diaModel;
-models.RoomResources = roomResources;
+models.SalaRecursos = roomResources;
 
 module.exports = models;

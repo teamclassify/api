@@ -12,7 +12,21 @@ const create = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    const response = await service.find();
+    const query = {};
+
+    for (let property in req.query) {
+      const value = req.query[property];
+
+      if (value == "true" || value == "false") {
+        query[property] = value === "true";
+      } else {
+        query[property] = value;
+      }
+    }
+
+    const response = await service.find({
+      where: query,
+    });
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

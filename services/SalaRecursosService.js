@@ -3,8 +3,8 @@ const models = require("../db/models");
 class SalaRecursosService {
   constructor() {}
 
-  async find() {
-    const res = await models.SalaRecursos.findAll();
+  async find(query = {}) {
+    const res = await models.SalaRecursos.findAll(query);
     return res;
   }
 

@@ -9,6 +9,7 @@ const edificioModel = require("./edificio");
 const salaModel = require("./sala");
 const eventoModel = require("./evento");
 const usuarioRolModel = require("./usuario_rol");
+const roomResources = require("./roomResources");
 
 const models = {};
 
@@ -23,5 +24,6 @@ models.Clase = claseModel;
 models.Prestamo = prestamoModel;
 models.Hora = horaModel;
 models.Dia = diaModel;
+models.SalaRecursos = roomResources;
 
 module.exports = models;

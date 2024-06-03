@@ -3,10 +3,11 @@ const router = express.Router();
 
 const usuarioController = require("../controllers/UsuarioController");
 const verifyToken = require("../middlewares/verifyToken");
+const onlyAdmins = require("../middlewares/onlyAdmins");
 
 router
-  .get("/", verifyToken, usuarioController.get)
-  .get("/:id", verifyToken, usuarioController.getById);
+  .get("/", verifyToken, onlyAdmins, usuarioController.get)
+  .get("/:id", verifyToken, onlyAdmins, usuarioController.getById);
 
 module.exports = router;
 

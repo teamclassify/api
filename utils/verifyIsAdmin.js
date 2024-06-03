@@ -13,10 +13,10 @@ const verifyIsAdmin = async (uid) => {
 
   const results = await usuarioRolService.find({
     usuario_id: uid,
-    rol_id: rolAdmin[0].id,
+    rol_id: rolAdmin[0]?.id,
   });
 
-  return [results.length > 0, results[0].id];
+  return [results.length > 0, results[0]?.id];
 };
 
 const verifyIsSuperAdmin = async (uid) => {
@@ -28,10 +28,10 @@ const verifyIsSuperAdmin = async (uid) => {
 
   const results = await usuarioRolService.find({
     usuario_id: uid,
-    rol_id: rolAdmin[0].id,
+    rol_id: rolAdmin[0]?.id,
   });
 
-  return [results.length > 0, results[0].id];
+  return [results.length > 0, results[0]?.id];
 };
 
 module.exports = { verifyIsAdmin, verifyIsSuperAdmin };

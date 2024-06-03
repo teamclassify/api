@@ -33,6 +33,7 @@ class PrestamoService {
         p.hora_inicio,
         p.hora_fin,
         p.fecha,
+        p.recursos,
         s.nombre as sala,
         e.nombre as edificio,
         u.nombre as usuario_nombre,

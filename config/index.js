@@ -2,6 +2,13 @@ require("dotenv").config();
 
 const PORT = process.env.PORT || 8080;
 const MODE = process.env.MODE || "dev";
+const EMAIL = {
+  HOST: process.env.EMAIL_SMPT_HOST,
+  PORT: process.env.EMAIL_SMPT_PORT,
+  SERVICE: process.env.EMAIL_SMPT_SERVICE,
+  MAIL: process.env.EMAIL_SMPT_MAIL,
+  APP_PASS: process.env.EMAIL_SMPT_APP_PASS
+}
 
 const FIREBASE = {
   type: process.env.TYPE,
@@ -23,6 +30,7 @@ module.exports = {
   PORT,
   MODE,
   FIREBASE,
+  EMAIL,
   DB_USER: process.env.DB_USER,
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_HOST: process.env.DB_HOST,

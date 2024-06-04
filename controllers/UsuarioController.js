@@ -16,26 +16,13 @@ async function get(req, res) {
       .json({ success: false, data: "Este usuario no tiene permisos" });
   }
 
+  const state = req.query.estado ?? "";
+  const name = req.query.nombre ?? "";
+  const rol = req.query.rol ?? "";
+
   try {
-    const usersRoles = await usuarioRolService.find();
-    const users = await service.find();
-    const roles = await rolService.find();
-
-    const usersToReturn = users.map((user) => {
-      const usuariosRoles = usersRoles.filter(
-        (ur) => ur.usuario_id === user.id
-      );
-
-      return {
-        ...user.dataValues,
-        roles: usuariosRoles.map((ur) => {
-          const rol = roles ? roles.find((r) => r.id === ur.rol_id) : null;
-          return rol?.nombre;
-        }),
-      };
-    });
-
-    res.json({ success: true, data: usersToReturn });
+    const users = await service.getAll({ name, state, rol });
+    res.json({ success: true, data: users });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
   }

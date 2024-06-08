@@ -131,6 +131,7 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
   try {
+    // TODO: check the user owner
     const { id } = req.params;
     const body = req.body;
     const response = await service.update(id, body);

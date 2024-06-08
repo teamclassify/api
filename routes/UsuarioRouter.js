@@ -8,6 +8,7 @@ const onlyAdmins = require("../middlewares/onlyAdmins");
 router
   .get("/", verifyToken, onlyAdmins, usuarioController.get)
   .get("/:id", verifyToken, onlyAdmins, usuarioController.getById)
+  .put("/:id", verifyToken, onlyAdmins, usuarioController.update)
   .post("/rols", verifyToken, onlyAdmins, usuarioController.setRols);
 
 module.exports = router;

@@ -57,6 +57,25 @@ async function getById(req, res) {
   }
 }
 
+const update = async (req, res) => {
+  const [isAdmin] = await verifyIsSuperAdmin(req.uid);
+
+  if (!isAdmin) {
+    res
+      .status(401)
+      .json({success: false, data: "Este usuario no tiene permisos"});
+  }
+  
+  try {
+    const { id } = req.params;
+    const body = req.body;
+    const response = await service.update(id, body);
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
 async function setRols(req, res) {
   const [isAdmin] = await verifyIsSuperAdmin(req.uid);
 
@@ -117,4 +136,5 @@ module.exports = {
   get,
   getById,
   setRols,
+  update
 };

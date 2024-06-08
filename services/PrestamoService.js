@@ -34,6 +34,7 @@ class PrestamoService {
         p.hora_fin,
         p.fecha,
         p.recursos,
+        p.razon_cancelacion,
         s.nombre as sala,
         e.nombre as edificio,
         u.nombre as usuario_nombre,

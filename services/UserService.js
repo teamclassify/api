@@ -1,7 +1,9 @@
 const models = require("../db/models");
+const db = require("../db");
 
 class UserService {
-  constructor() {}
+  constructor() {
+  }
 
   async find(params) {
     const query = {};
@@ -12,6 +14,16 @@ class UserService {
 
     const res = await models.Usuario.findAll(query);
     return res;
+  }
+
+  async getAll({name, state, rol} = {name: "", state: null, rol: null}) {
+    const res = await db.query(`
+        SELECT * FROM vista_usuarios
+        WHERE nombre LIKE '%${name}%' ${state ? `AND estado = '${state}'` : ""} ${rol ? `AND rol LIKE '%${rol}%'` : ""}
+        ORDER BY nombre
+    `);
+
+    return res.length > 0 ? res[0] : null;
   }
 
   async findOne(id) {
@@ -33,7 +45,7 @@ class UserService {
   async delete(id) {
     const model = await this.findOne(id);
     await model.destroy();
-    return { deleted: true };
+    return {deleted: true};
   }
 }
 

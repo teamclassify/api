@@ -1,7 +1,9 @@
 const models = require("../db/models");
+const db = require("../db/index")
 
 class UsuarioRolService {
-  constructor() {}
+  constructor() {
+  }
 
   async find(params) {
     const query = {};
@@ -21,10 +23,17 @@ class UsuarioRolService {
 
   async findWithRelations(uid) {
     const [res] = await db.query(`
-      SELECT u.nombre, u.correo, u.id
+      SELECT
+        u.nombre,
+        u.correo,
+        u.id,
+        group_concat(r.nombre separator ',') AS rol,
+        group_concat(r.id separator ',') AS rol_id
       FROM usuario_rols ur
       INNER JOIN usuario u ON u.id = ur.usuario_id
-      WHERE ur.usuario_id = ${uid}
+      JOIN rols r ON r.id = ur.rol_id
+      WHERE u.id = '${uid}'
+      group by u.id
     `);
 
     return res.length > 0 ? res[0] : null;
@@ -41,10 +50,16 @@ class UsuarioRolService {
     return res;
   }
 
-  async delete(id) {
-    const model = await this.findOne(id);
+  async delete(params) {
+    const query = {};
+
+    if (params) {
+      query.where = params;
+    }
+    
+    const model = await models.UsuarioRol.findOne(query);
     await model.destroy();
-    return { deleted: true };
+    return {deleted: true};
   }
 }
 

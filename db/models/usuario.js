@@ -9,7 +9,8 @@ const user = db.define(
     nombre: { type: sequelize.STRING },
     correo: { type: sequelize.STRING },
     photo: { type: sequelize.STRING },
-    username: { type: sequelize.STRING }
+    username: { type: sequelize.STRING },
+    estado: { type: sequelize.STRING },
   },
   {
     freezeTableName: true,

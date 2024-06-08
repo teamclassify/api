@@ -73,7 +73,7 @@ class EventoService {
       INNER JOIN dia d ON h2.id = d.horario_id
       INNER JOIN horas h ON d.id = h.dia_id
       INNER JOIN evento e ON h.evento_id = e.id
-      WHERE s.id = ${sala_id}
+      WHERE s.id = ${sala_id} AND (d.nombre = '${diaNombre}' OR d.fecha = '${fecha}')
       
       AND (
         (h.hora_inicio = ${start_hour})
@@ -84,8 +84,6 @@ class EventoService {
         OR
         (h.hora_fin > ${start_hour} AND h.hora_fin <= ${end_hour})
       )
-
-      AND d.nombre = '${diaNombre}' OR d.fecha = '${fecha}'
       `
     );
 

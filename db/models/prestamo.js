@@ -17,6 +17,7 @@ const prestamo = db.define(
     cantidad_personas: { type: sequelize.INTEGER },
     sala_id: { type: sequelize.INTEGER },
     recursos: { type: sequelize.STRING },
+    razon_cancelacion: { type: sequelize.STRING, default: null }
   },
   {
     freezeTableName: true,

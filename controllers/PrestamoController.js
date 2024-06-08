@@ -212,17 +212,17 @@ const update = async (req, res) => {
       }
 
       const dias = [
+        "domingo",
         "lunes",
         "martes",
         "miercoles",
         "jueves",
         "viernes",
         "sabado",
-        "domingo",
       ];
 
       const dia = await models.Dia.create({
-        nombre: dias[new Date(response.fecha).getDay()],
+        nombre: dias[new Date(response.fecha.replaceAll('-', "/")).getDay()],
         fecha: response.fecha,
         horario_id: horarioElement[0].horario,
       })

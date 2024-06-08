@@ -16,7 +16,7 @@ class EventoService {
 
   async findBySala(sala_id) {
     const [results] = await db.query(
-      `(SELECT e.id, c.cod_asignatura, h.hora_inicio, h.hora_fin, c.nombre,
+      `(SELECT e.id, d.fecha, c.cod_asignatura, h.hora_inicio, h.hora_fin, c.nombre,
         d.nombre as dia , s.nombre as sala, c.estado, c.cod_docente, 'clase' as tipo, s.capacidad as cantidad_personas
       FROM salas s
       INNER JOIN horarios h2 ON s.id = h2.sala_id
@@ -25,7 +25,7 @@ class EventoService {
       INNER JOIN evento e ON h.evento_id = e.id
       INNER JOIN clase c ON e.clase_id = c.id
       WHERE c.estado = 'APROBADO' AND s.id = ${sala_id}) UNION
-      (SELECT e.id, NULL as cod_asignatura, h.hora_inicio, h.hora_fin, p.razon as nombre,
+      (SELECT e.id, d.fecha, NULL as cod_asignatura, h.hora_inicio, h.hora_fin, p.razon as nombre,
         d.nombre as dia , s.nombre as sala, p.estado, NULL as cod_docente, 'prestamo' as tipo, p.cantidad_personas
       FROM salas s
       INNER JOIN horarios h2 ON s.id = h2.sala_id

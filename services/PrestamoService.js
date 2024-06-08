@@ -147,7 +147,7 @@ class PrestamoService {
             : "WHERE"
         }
         p.razon LIKE '%${reason}%'
-        ORDER BY p.id;
+        ORDER BY p.updatedAt DESC;
       `);
 
     return res.length > 0 ? res[0] : null;

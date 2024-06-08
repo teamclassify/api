@@ -102,6 +102,49 @@ const sendEmailLoanCanceled = async (req, res, loan) => {
   });
 }
 
+const sendEmailLoanAccepted = async (req, res, loan) => {
+  const loanInDB = await service.findOne(loan.id);
+
+  if (!loanInDB) return;
+
+  await sendEmail({
+    to: loanInDB.usuario_correo,
+    subject: "Aceptación de préstamo",
+    message: `
+        <p>Querido, ${loanInDB.usuario_nombre}</p>
+
+        <p>Este correo electrónico confirma que se ha <strong>aceptado</strong> la reserva de la sala:</p>
+
+        <div class="info">
+            <div class="flex">
+              <label for="date">Fecha y hora: </label>
+              <p id="date">${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
+            </div>
+
+            <div class="flex">
+              <label for="room">Sala: </label>
+              <p id="room">${loanInDB.edificio} - ${loanInDB.sala}</p>
+            </div>
+            
+            <div class="flex">
+              <label for="reason">Razón: </label>
+              <p id="reason">${loanInDB.razon}</p>
+            </div>
+
+            <div class="flex">
+              <label for="equipment">Recursos necesarios: </label>
+              <p id="equipment">${loanInDB.recursos}</p>
+            </div>
+            
+            <div class="flex">
+              <label for="equipment">Cantidad de personas que asistiran: </label>
+              <p id="equipment">${loanInDB.cantidad_personas}</p>
+            </div>
+        </div>
+      `
+  });
+}
+
 const create = async (req, res) => {
   if (
     !req.body.razon ||
@@ -238,6 +281,8 @@ const update = async (req, res) => {
     if (response?.estado === 'CANCELADO') {
       // enviear email al usuario
       await sendEmailLoanCanceled(req, res, response);
+    } else if (response?.estado === 'APROBADO') {
+      await sendEmailLoanAccepted(req, res, response);
     }
 
     res.json({success: true, data: response});

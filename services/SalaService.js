@@ -52,7 +52,7 @@ class SalaService {
         INNER JOIN dia d ON h2.id = d.horario_id
         INNER JOIN horas h ON d.id = h.dia_id
         INNER JOIN evento e ON h.evento_id = e.id
-        WHERE (d.nombre = '${diaNombre}' OR d.fecha = '${fecha}')
+        WHERE ((e.clase_id IS NOT NULL AND d.nombre = '${diaNombre}') OR (e.prestamo_id IS NOT NULL AND d.fecha = '${fecha}'))
         AND (
           (h.hora_inicio = ${start_hour})
           OR

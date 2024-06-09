@@ -22,15 +22,15 @@ class SalaService {
 
   async getSalasDisponibles(fecha, start_hour, end_hour) {
     const dias = [
+      "domingo",
       "lunes",
       "martes",
       "miercoles",
       "jueves",
       "viernes",
       "sabado",
-      "domingo",
     ];
-    const dia = new Date(fecha).getDay();
+    const dia = new Date(fecha.replaceAll('-', "/")).getDay();
     const diaNombre = dias[dia];
 
     if (diaNombre === "domingo") {

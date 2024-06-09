@@ -35,7 +35,7 @@ const getById = async (req, res) => {
 
 const getSalasDisponibles = async (req, res) => {
   try {
-    const { fecha, start_hour, end_hour } = req.body;
+    const { fecha, start_hour, end_hour } = req.query;
     const response = await service.getSalasDisponibles(fecha, start_hour, end_hour);
     res.json({ success: true, data: response });
   } catch (error) {

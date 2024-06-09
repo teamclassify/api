@@ -40,8 +40,9 @@ class SalaService {
     if (!diaNombre) {
       throw new Error("Fecha no válida");
     }
+    
     const [results] = await db.query(
-      `SELECT e.nombre as edificio, s.nombre, s.capacidad
+      `SELECT s.id, e.nombre as edificio, s.nombre, s.capacidad, s.cantidad_computadores
       FROM salas s
       INNER JOIN edificios e ON s.edificio_id = e.id
       WHERE s.id NOT IN (

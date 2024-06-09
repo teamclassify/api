@@ -13,6 +13,7 @@ const evento = db.define(
       type: sequelize.INTEGER,
       references: { model: "prestamo", key: "id" },
     },
+    asistencia: {  type: sequelize.BOOLEAN, default: false }
   },
   {
     freezeTableName: true,

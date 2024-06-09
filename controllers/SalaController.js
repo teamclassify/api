@@ -33,6 +33,16 @@ const getById = async (req, res) => {
   }
 };
 
+const getSalasDisponibles = async (req, res) => {
+  try {
+    const { fecha, start_hour, end_hour } = req.query;
+    const response = await service.getSalasDisponibles(fecha, start_hour, end_hour);
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
 const update = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,4 +70,5 @@ module.exports = {
   getById,
   update,
   _delete,
+  getSalasDisponibles,
 };

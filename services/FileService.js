@@ -28,11 +28,11 @@ class FileService {
     const clases_db_values = clases
       .map(
         (clase) =>
-          `('DEFAULT','${clase.nombre}','${clase.cod_asignatura}','${clase.grupo}','${usuario_id}','APROBADO','${clase.cod_docente}','${this.currentDay}','${this.currentDay}')`
+          `('${clase.nombre}','${clase.cod_asignatura}','${clase.grupo}','${usuario_id}','APROBADO','${clase.cod_docente}','${this.currentDay}','${this.currentDay}')`
       )
       .join(", ");
 
-    await db.query(`INSERT INTO clase VALUES ${clases_db_values}`);
+    await db.query(`INSERT INTO clase (nombre, cod_asignatura, grupo, usuario_id, estado, cod_docente, createdAt, updatedAt) VALUES ${clases_db_values}`);
   }
 
   getEventToCreate(clases, clasesInDB) {
@@ -100,7 +100,6 @@ class FileService {
                   if (horario) {
                     models.Dia.create({
                       nombre: horarioElement.dia.toLowerCase(),
-                      fecha: "NULL",
                       horario_id: horario.id,
                     }).then((dia) => {
                       models.Hora.create({

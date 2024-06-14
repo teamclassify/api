@@ -14,8 +14,8 @@ const dia = db.define(
   "dia",
   {
     id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
-    nombre: {type: sequelize.STRING},
-    fecha: { type: sequelize.DATE},
+    nombre: {type: sequelize.STRING },
+    fecha: { type: sequelize.DATE },
     horario_id: {type: sequelize.INTEGER, references: {model: 'horario', key: 'id'}}
   },
   {

@@ -183,25 +183,32 @@ const get = async (req, res) => {
     : [];
 
   const reason = req.query.razon ?? "";
+  const page = req.query.page || 0;
 
   try {
-    const response = await service.findAllByFilters(filters, reason);
-    res.status(200).json({sucess: true, data: response});
+    const count = await service.count(filters, reason);
+    const response = await service.findAllByFilters(filters, reason, page);
+    res.status(200).json({sucess: true, count: count[0]?.count ?? 0, data: response});
   } catch (error) {
     res.status(500).send({success: false, message: error.message});
   }
 };
 
 const getByUser = async (req, res) => {
+  const page = req.query.page || 0;
+  
   try {
-    const response = await service.findAllByFilters([
+    const filters = [
       {
         name: "u.id",
         value: req.uid,
       },
-    ]);
+    ];
+    
+    const count = await service.count(filters, "");
+    const response = await service.findAllByFilters(filters, "", page);
 
-    res.status(200).json({sucess: true, data: response});
+    res.status(200).json({sucess: true, count: count[0]?.count ?? 0, data: response});
   } catch (error) {
     res.status(500).send({success: false, message: error.message});
   }

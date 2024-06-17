@@ -2,6 +2,7 @@ const db = require("../db");
 const models = require("../db/models");
 const UsuarioRolService = require("./UsuarioRolService");
 const EventoService = require("./EventoService");
+const {PAGINATION_LIMIT} = require("../config");
 
 const usuarioRolService = new UsuarioRolService();
 const eventoService = new EventoService();
@@ -110,11 +111,34 @@ class PrestamoService {
 
     return res.length > 0 ? res[0] : null;
   }
+  
+  async count(filters = [], reason = "") {
+    const res = await db.query(`
+        SELECT COUNT(*) as count
+        FROM prestamo p
+        INNER JOIN salas s ON s.id = p.sala_id
+        INNER JOIN edificios e ON e.id = s.edificio_id
+        INNER JOIN usuario_rols ur ON ur.id = p.usuario_id
+        INNER JOIN usuario u ON u.id = ur.usuario_id
+        ${
+      filters.length > 0
+        ? `WHERE (${filters
+          .map((filter) => {
+            return `${filter.name} = '${filter.value}'`;
+          })
+          .join(" OR ")}) AND`
+        : "WHERE"
+    }
+        p.razon LIKE '%${reason}%'
+      `);
+
+    return res.length > 0 ? res[0] : null;
+  }
 
   /*
     Get all prestamos with sala and edificio relations with filters
   */
-  async findAllByFilters(filters = [], reason = "") {
+  async findAllByFilters(filters = [], reason = "", page = 0) {
     const res = await db.query(`
         SELECT
           p.id,
@@ -148,7 +172,8 @@ class PrestamoService {
             : "WHERE"
         }
         p.razon LIKE '%${reason}%'
-        ORDER BY p.updatedAt DESC;
+        ORDER BY p.updatedAt DESC
+        LIMIT ${PAGINATION_LIMIT} OFFSET ${page * PAGINATION_LIMIT}
       `);
 
     return res.length > 0 ? res[0] : null;

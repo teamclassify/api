@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const PAGINATION_LIMIT = 2;
+const PAGINATION_LIMIT = 10;
 const PORT = process.env.PORT || 8080;
 const MODE = process.env.MODE || "dev";
 const EMAIL = {

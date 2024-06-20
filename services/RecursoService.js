@@ -1,6 +1,6 @@
 const models = require("../db/models");
 
-class RecursosService {
+class RecursoService {
   constructor() {}
 
   async find(query = {}) {
@@ -31,4 +31,4 @@ class RecursosService {
   }
 }
 
-module.exports = RecursosService;
+module.exports = RecursoService;

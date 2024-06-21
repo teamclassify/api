@@ -11,7 +11,6 @@ class SalaRecursoService {
     if (params) {
       query.where = params;
     }
-
     const res = await models.SalaRecurso.findAll(query);
     return res;
   }
@@ -21,11 +20,11 @@ class SalaRecursoService {
     return res;
   }
 
-  async findBySala(uid) {
+  async getBySala(id) {
     const [res] = await db.query(`
-      SELECT r.id, r.nombre, r.descripcion, r.img FROM sala_recursos sr
-        JOIN recursos r ON sr.recurso_id = r.id
-        WHERE sr.sala_id = ${uid}
+      SELECT r.nombre, r.descripcion, r.img FROM sala_recursos sr
+        INNER JOIN recursos r ON sr.recurso_id = r.id
+        WHERE sr.sala_id = ${id}
     `);
     return res.length > 0 ? res[0] : null;
   }

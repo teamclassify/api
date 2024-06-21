@@ -1,7 +1,7 @@
 const sequelize = require("sequelize");
 const db = require("../index");
 
-const recurso = db.define(
+const Recurso = db.define(
   "recursos",
   {
     id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
@@ -14,4 +14,4 @@ const recurso = db.define(
   }
 );
 
-module.exports = recurso;
+module.exports = Recurso;

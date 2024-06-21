@@ -4,17 +4,22 @@ class RecursoService {
   constructor() {}
 
   async find(query = {}) {
-    const res = await models.SalaRecursos.findAll(query);
+    const res = await models.Recurso.findAll(query);
+    return res;
+  }
+  
+  async getAll(){
+    const res = await models.Recurso.findAll();
     return res;
   }
 
   async findOne(id) {
-    const res = await models.SalaRecursos.findByPk(id);
+    const res = await models.Recurso.findByPk(id);
     return res;
   }
 
   async create(data) {
-    const res = await models.SalaRecursos.create(data);
+    const res = await models.Recurso.create(data);
     return res;
   }
 

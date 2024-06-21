@@ -12,6 +12,7 @@ const eventoRouter = require("./routes/EventoRouter");
 const usuarioRouter = require("./routes/UsuarioRouter");
 const salaRecursosRouter = require("./routes/SalaRecursosRouter");
 const statsRouter = require("./routes/StatsRouter");
+const anomaliaRouter = require("./routes/AnomaliaRouter");
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/eventos", eventoRouter);
 app.use("/api/usuarios", usuarioRouter);
 app.use("/api/sala-recursos", salaRecursosRouter);
 app.use("/api/estadisticas", statsRouter);
+app.use("/api/anomalias", anomaliaRouter);
 
 app.listen(PORT, () => {
   console.log(`Server start with port ${PORT}`);

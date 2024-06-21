@@ -45,9 +45,9 @@ const getById = async (req, res) => {
   }
 }
 
-const getAll = async (res) => {
+const getAll = async (_, res) => {
   try {
-    const salasRecursos = await recursoService.getAll();
+    const salasRecursos = await recursoService.find();
     res.json({ success: true, data: salasRecursos });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
@@ -66,9 +66,11 @@ const getBySala = async (req, res) => {
 
 const updateBySala = async (req, res) =>{
   try {
-    const { id } = req.params;
     const body = req.body;
-    const response = await salaRecursoService.update(id, body);
+    if(body.activo === null){
+      return res.status(500).json({ success: false, data: null });
+    }
+    const response = await salaRecursoService.update(body);
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });
@@ -87,8 +89,7 @@ const assignRecurso = async (req, res) => {
 
 const unassignRecurso = async (req, res) => {
   try {
-    const { sala_id, recurso_id } = req.body;
-    const response = await salaRecursoService.delete(sala_id, recurso_id);
+    const response = await salaRecursoService.delete(req.body);
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

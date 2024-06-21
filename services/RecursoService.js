@@ -7,11 +7,6 @@ class RecursoService {
     const res = await models.Recurso.findAll(query);
     return res;
   }
-  
-  async getAll(){
-    const res = await models.Recurso.findAll();
-    return res;
-  }
 
   async findOne(id) {
     const res = await models.Recurso.findByPk(id);
@@ -19,7 +14,11 @@ class RecursoService {
   }
 
   async create(data) {
-    const res = await models.Recurso.create(data);
+    const res = await models.Recurso.create({
+      nombre: data.nombre,
+      descripcion: data.descripcion,
+      img: data.img
+    });
     return res;
   }
 

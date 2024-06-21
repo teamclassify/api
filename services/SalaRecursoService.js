@@ -26,7 +26,7 @@ class SalaRecursoService {
         INNER JOIN recursos r ON sr.recurso_id = r.id
         WHERE sr.sala_id = ${id}
     `);
-    return res.length > 0 ? res[0] : null;
+    return res.length > 0 ? res : null;
   }
 
   async create(data) {
@@ -34,9 +34,13 @@ class SalaRecursoService {
     return model;
   }
 
-  async update(id, data) {
-    const model = await this.findOne(id);
-    const res = await model.update(data);
+  async update(data) {
+    const model = await this.find({sala_id: data.sala_id, recurso_id: data.recurso_id});
+    console.log(model)
+    if(model.length === 0){
+      return null;
+    }
+    const res = await model[0].update(data);
     return res;
   }
 

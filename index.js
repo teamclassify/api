@@ -10,7 +10,7 @@ const claseRouter = require("./routes/ClaseRouter");
 const fileRouter = require("./routes/FileRouter");
 const eventoRouter = require("./routes/EventoRouter");
 const usuarioRouter = require("./routes/UsuarioRouter");
-const salaRecursosRouter = require("./routes/SalaRecursosRouter");
+const salaRecursosRouter = require("./routes/RecursoRouter");
 
 const app = express();
 
@@ -34,7 +34,7 @@ app.use("/api/clases", claseRouter);
 app.use("/api/files", fileRouter);
 app.use("/api/eventos", eventoRouter);
 app.use("/api/usuarios", usuarioRouter);
-app.use("/api/sala-recursos", salaRecursosRouter);
+app.use("/api/recursos", salaRecursosRouter);
 
 app.listen(PORT, () => {
   console.log(`Server start with port ${PORT}`);

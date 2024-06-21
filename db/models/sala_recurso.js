@@ -8,7 +8,11 @@ const SalaRecurso = db.define("sala_recursos", {
     sala_id: { type: sequelize.INTEGER, references: { model: 'salas', key: 'id'}},
     recurso_id: { type: sequelize.INTEGER, references: { model: 'recursos', key: 'id'}},
     activo: { type: sequelize.BOOLEAN, default: true },
-});
+  },
+  {
+    timestamps: false,
+  }
+);
 
 recurso.belongsToMany(sala, {
   through: SalaRecurso,

@@ -11,6 +11,7 @@ const fileRouter = require("./routes/FileRouter");
 const eventoRouter = require("./routes/EventoRouter");
 const usuarioRouter = require("./routes/UsuarioRouter");
 const salaRecursosRouter = require("./routes/RecursoRouter");
+const retroalimentacionRouter = require("./routes/RetroalimentacionRouter");
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/files", fileRouter);
 app.use("/api/eventos", eventoRouter);
 app.use("/api/usuarios", usuarioRouter);
 app.use("/api/recursos", salaRecursosRouter);
+app.use("/api/retroalimentacion", retroalimentacionRouter);
 
 app.listen(PORT, () => {
   console.log(`Server start with port ${PORT}`);

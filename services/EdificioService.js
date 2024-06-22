@@ -26,8 +26,7 @@ class EdificioService {
   }
 
   async findName(name){
-    const res = await db.query(`SELECT * FROM edificios WHERE nombre = '${name}'`)
-    return res
+    return db.query(`SELECT * FROM edificios WHERE nombre = '${name}'`)
   }
 
   async update(id, data) {

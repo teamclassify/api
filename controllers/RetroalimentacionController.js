@@ -30,7 +30,7 @@ const getBySala = async (req, res) => {
 
 const getByUsuario = async (req, res) => {
     try {
-      const response = await service.find({usuario_id: req.body.usuario_id});
+      const response = await service.getByUsuario(req.body.usuario_id);
       res.json({ success: true, data: response });
     } catch (error) {
       res.status(500).send({ success: false, message: error.message });

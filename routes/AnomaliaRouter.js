@@ -8,5 +8,6 @@ const onlyAdminsOrSupport = require("../middlewares/onlyAdminsOrSupport");
 router
   .get("/", verifyToken, onlyAdminsOrSupport, anomaliaController.getAll)
   .post("/", verifyToken, anomaliaController.create)
+  .put("/", verifyToken, onlyAdminsOrSupport, anomaliaController.update)
 
 module.exports = router;

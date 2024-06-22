@@ -37,10 +37,13 @@ class PrestamoService {
         p.recursos,
         p.razon_cancelacion,
         s.nombre as sala,
+        s.id as sala_id,
         e.nombre as edificio,
+        e.id as edificio_id,
         u.nombre as usuario_nombre,
         u.correo as usuario_correo,
-        ur.rol_id as usuario_rol
+        ur.rol_id as usuario_rol,
+        u.id as usuario_id
       FROM prestamo p
       INNER JOIN salas s ON s.id = p.sala_id
       INNER JOIN edificios e ON e.id = s.edificio_id
@@ -94,12 +97,14 @@ class PrestamoService {
         s.nombre as sala,
         s.id as sala_id,
         e.nombre as edificio,
+        e.id as edificio_id,
         p.recursos,
         u.username as usuario_username,
         u.nombre as usuario_nombre,
         u.correo as usuario_correo,
         u.photo as usuario_photo,
-        ur.rol_id as usuario_rol
+        ur.rol_id as usuario_rol,
+        u.id as usuario_id
       FROM prestamo p
       INNER JOIN salas s ON s.id = p.sala_id
       INNER JOIN edificios e ON e.id = s.edificio_id
@@ -151,12 +156,14 @@ class PrestamoService {
           s.nombre as sala,
           s.id as sala_id,
           e.nombre as edificio,
+          e.id as edificio_id,
           p.recursos,
           u.username as usuario_username,
           u.nombre as usuario_nombre,
           u.correo as usuario_correo,
           u.photo as usuario_photo,
-          ur.rol_id as usuario_rol
+          ur.rol_id as usuario_rol,
+          u.id as usuario_id
         FROM prestamo p
         INNER JOIN salas s ON s.id = p.sala_id
         INNER JOIN edificios e ON e.id = s.edificio_id

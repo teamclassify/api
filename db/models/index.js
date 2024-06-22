@@ -10,6 +10,7 @@ const salaModel = require("./sala");
 const eventoModel = require("./evento");
 const usuarioRolModel = require("./usuario_rol");
 const roomResources = require("./roomResources");
+const anomalia = require("./anomalia");
 
 const models = {};
 
@@ -25,5 +26,6 @@ models.Prestamo = prestamoModel;
 models.Hora = horaModel;
 models.Dia = diaModel;
 models.SalaRecursos = roomResources;
+models.Anomalia = anomalia;
 
 module.exports = models;

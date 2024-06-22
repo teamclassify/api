@@ -88,8 +88,14 @@ const assignRecurso = async (req, res) => {
 }
 
 const unassignRecurso = async (req, res) => {
+  const { id } = req.body
+  
+  if (id === null) {
+    return res.status(401).json({ success: false, message: "Debes ingresar un ID" })
+  }
+  
   try {
-    const response = await salaRecursoService.delete(req.body);
+    const response = await salaRecursoService.delete(req.body.id);
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

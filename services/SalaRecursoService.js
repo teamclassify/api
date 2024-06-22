@@ -22,7 +22,12 @@ class SalaRecursoService {
 
   async getBySala(id) {
     const [res] = await db.query(`
-      SELECT r.nombre, r.descripcion, r.img FROM sala_recursos sr
+      SELECT
+        sr.id,
+        r.nombre,
+        r.descripcion,
+        r.img, r.id AS recurso_id
+        FROM sala_recursos sr
         INNER JOIN recursos r ON sr.recurso_id = r.id
         WHERE sr.sala_id = ${id}
     `);
@@ -44,14 +49,8 @@ class SalaRecursoService {
     return res;
   }
 
-  async delete(params) {
-    const query = {};
-
-    if (params) {
-      query.where = params;
-    }
-    
-    const model = await models.SalaRecurso.findOne(query);
+  async delete(id) {
+    const model = await this.findOne(id);
     await model.destroy();
     return {deleted: true};
   }

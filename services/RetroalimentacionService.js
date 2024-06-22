@@ -21,14 +21,32 @@ class RetroalimentacionService {
 
   async getBySala(id) {
     const res = await db.query(
-        `SELECT u.nombre as usuario, p.razon, e.nombre as edificio, s.nombre as sala, r.valoracion, r.comentario
+        `SELECT u.nombre as usuario, ro.nombre as rol, p.razon, e.nombre as edificio, s.nombre as sala, r.valoracion, r.comentario
         FROM retroalimentacions r
         INNER JOIN prestamo p ON r.prestamo_id = p.id
         INNER JOIN salas s ON p.sala_id = s.id
         INNER JOIN edificios e ON s.edificio_id = e.id
         INNER JOIN usuario_rols ur ON r.usuario_id = ur.id
         INNER JOIN usuario u ON ur.usuario_id = u.id
-        WHERE p.sala_id = ${id}`
+        INNER JOIN rols ro ON ur.rol_id = ro.id
+        WHERE p.sala_id = ${id}
+        GROUP BY u.nombre, ro.nombre, p.razon, e.nombre, s.nombre, r.valoracion, r.comentario`
+        );
+    return res;
+  }
+
+  async getByRol(id) {
+    const res = await db.query(
+        `SELECT u.nombre as usuario, ro.nombre as rol, p.razon, e.nombre as edificio, s.nombre as sala, r.valoracion, r.comentario
+        FROM retroalimentacions r
+        INNER JOIN prestamo p ON r.prestamo_id = p.id
+        INNER JOIN salas s ON p.sala_id = s.id
+        INNER JOIN edificios e ON s.edificio_id = e.id
+        INNER JOIN usuario_rols ur ON r.usuario_id = ur.id
+        INNER JOIN usuario u ON ur.usuario_id = u.id
+        INNER JOIN rols ro ON ur.rol_id = ro.id
+        WHERE ur.rol_id = ${id}
+        GROUP BY u.nombre, ro.nombre, p.razon, e.nombre, s.nombre, r.valoracion, r.comentario`
         );
     return res;
   }

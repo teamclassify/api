@@ -13,6 +13,7 @@ const recursoModel = require("./recurso");
 const salaRecursoModel = require("./sala_recurso");
 const retroalimentacionModel = require("./retroalimentacion");
 const anomalia = require("./anomalia");
+const prestamoDia = require("./prestamo_dia");
 
 const models = {};
 
@@ -31,5 +32,6 @@ models.Recurso = recursoModel;
 models.SalaRecurso = salaRecursoModel;
 models.Retroalimentacion = retroalimentacionModel;
 models.Anomalia = anomalia;
+models.PrestamoDia = prestamoDia;
 
 module.exports = models;

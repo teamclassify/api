@@ -45,6 +45,8 @@ class EventoService {
   }
 
   async findBySalaAndRangeHours(sala_id, fecha, start_hour, end_hour) {
+    if (fecha === null || start_hour ===  null || end_hour === null) return [];
+    
     const dias = [
       "domingo",
       "lunes",

@@ -1,13 +1,11 @@
 const PrestamoService = require("../services/PrestamoService");
 const EventoService = require("../services/EventoService");
-const HoraService = require("../services/HoraService");
 const HorarioService = require("../services/HorarioService");
 const sendEmail = require("../utils/sendEmail");
 const models = require("../db/models");
 
 const service = new PrestamoService();
 const eventoService = new EventoService();
-const horaService = new HoraService();
 const horarioService = new HorarioService();
 
 const sendEmailLoan = async (req, res, loan) => {
@@ -148,10 +146,6 @@ const sendEmailLoanAccepted = async (req, res, loan) => {
 const create = async (req, res) => {
   if (
     !req.body.razon ||
-    !req.body.fecha ||
-    !req.body.hora_fin ||
-    !req.body.hora_inicio ||
-    !req.body.cantidad_personas ||
     !req.body.sala_id ||
     !req.body.email
   ) {
@@ -163,10 +157,8 @@ const create = async (req, res) => {
   try {
     const response = await service.create(req.body, req.uid);
 
-    // send email to user
-    await sendEmailLoan(req, res, response);
-
-    res.json({success: true, data: response});
+    // await sendEmailLoan(req, res, response);
+    return res.json({success: true, data: response});
   } catch (error) {
     res.status(500).send({success: false, message: error.message});
   }

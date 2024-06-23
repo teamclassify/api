@@ -36,15 +36,24 @@ class PrestamoService {
         p.fecha,
         p.recursos,
         p.razon_cancelacion,
+        p.fecha_inicio,
+        p.fecha_fin,
+        p.tipo,
+        group_concat(pd.dia separator ',') AS dias,
+        group_concat(pd.hora_inicio separator ',') AS horas_inicio,
+        group_concat(pd.hora_fin separator ',') AS horas_fin,
         s.nombre as sala,
         s.id as sala_id,
         e.nombre as edificio,
         e.id as edificio_id,
         u.nombre as usuario_nombre,
         u.correo as usuario_correo,
+        u.photo as usuario_photo,
+        u.tipo as usuario_tipo,
         ur.rol_id as usuario_rol,
         u.id as usuario_id
       FROM prestamo p
+      LEFT JOIN prestamo_dia pd ON pd.prestamo_id = p.id
       INNER JOIN salas s ON s.id = p.sala_id
       INNER JOIN edificios e ON e.id = s.edificio_id
       INNER JOIN usuario_rols ur ON ur.id = p.usuario_id
@@ -153,6 +162,12 @@ class PrestamoService {
           p.hora_inicio,
           p.hora_fin,
           p.fecha,
+          p.fecha_inicio,
+          p.fecha_fin,
+          p.tipo,
+          group_concat(pd.dia separator ',') AS dias,
+          group_concat(pd.hora_inicio separator ',') AS horas_inicio,
+          group_concat(pd.hora_fin separator ',') AS horas_fin,
           s.nombre as sala,
           s.id as sala_id,
           e.nombre as edificio,
@@ -162,9 +177,11 @@ class PrestamoService {
           u.nombre as usuario_nombre,
           u.correo as usuario_correo,
           u.photo as usuario_photo,
+          u.tipo as usuario_tipo,
           ur.rol_id as usuario_rol,
           u.id as usuario_id
         FROM prestamo p
+        LEFT JOIN prestamo_dia pd ON pd.prestamo_id = p.id
         INNER JOIN salas s ON s.id = p.sala_id
         INNER JOIN edificios e ON e.id = s.edificio_id
         INNER JOIN usuario_rols ur ON ur.id = p.usuario_id
@@ -179,6 +196,7 @@ class PrestamoService {
             : "WHERE"
         }
         p.razon LIKE '%${reason}%'
+        GROUP BY p.id
         ORDER BY p.updatedAt DESC
         LIMIT ${PAGINATION_LIMIT} OFFSET ${page * PAGINATION_LIMIT}
       `);
@@ -207,8 +225,6 @@ class PrestamoService {
             data.hora_fin
           )
           .then((eventos) => {
-            console.log(eventos);
-
             if (eventos.length > 0) {
               throw new Error("Ya hay un evento en ese rango de horas");
             }
@@ -218,14 +234,33 @@ class PrestamoService {
               razon: data.razon,
               estado: "PENDIENTE",
               cantidad_personas: data.cantidad_personas,
-              hora_inicio: data.hora_inicio,
-              hora_fin: data.hora_fin,
-              fecha: data.fecha,
+              hora_inicio: data.tipo === 'SEMESTRAL' ? null : data.hora_inicio,
+              hora_fin: data.tipo === 'SEMESTRAL' ? null : data.hora_fin,
+              fecha: data.tipo === 'SEMESTRAL' ? null : data.fecha,
               sala_id: data.sala_id,
               recursos: data.recursos || "",
+              fecha_inicio: data.tipo === 'UNICO' ? data.fecha : data.fecha_inicio,
+              fecha_fin: data.tipo === 'UNICO' ? data.fecha : data.fecha_fin,
+              tipo: data.tipo
             })
               .then((prestamo) => {
-                return prestamo;
+                
+                if (prestamo.tipo === 'UNICO') {
+                  return prestamo;
+                } else {
+                  // crear prestamo_dia
+                  return Promise.all(
+                    data?.dias?.map(dia => {
+                      return models.PrestamoDia.create({
+                        prestamo_id: prestamo.id,
+                        dia: dia.dia,
+                        hora_inicio: dia.hora_inicio,
+                        hora_fin: dia.hora_fin
+                      })
+                    })
+                  )
+                }
+                
               })
               .catch((error) => {
                 throw new Error(error.message);

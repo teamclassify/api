@@ -26,7 +26,9 @@ class UsuarioRolService {
       SELECT
         u.nombre,
         u.correo,
+        u.estado,
         u.id,
+        u.tipo,
         group_concat(r.nombre separator ',') AS rol,
         group_concat(r.id separator ',') AS rol_id
       FROM usuario_rols ur

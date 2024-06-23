@@ -19,6 +19,7 @@ class AnomaliaService {
             u.nombre AS usuario_nombre,
             u.correo AS usuario_correo,
             u.photo AS usuario_photo,
+            u.tipo AS usuario_tipo,
             u.id AS usuario_id
         FROM anomalia a
         INNER JOIN salas s ON s.id = a.sala_id 

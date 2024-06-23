@@ -132,9 +132,22 @@ async function setRols(req, res) {
   }
 }
 
+const updateMe = async (req, res) => {
+  const uid = req.uid;
+
+  try {
+    const body = req.body;
+    const response = await service.update(uid, body);
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   get,
   getById,
   setRols,
-  update
+  update,
+  updateMe
 };

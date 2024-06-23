@@ -6,6 +6,7 @@ const verifyToken = require("../middlewares/verifyToken");
 
 router
   .get("/", recursoController.getAll)
+  .get("/estado/", recursoController.getByEstado)
   .get("/:id", recursoController.getById)
   .get("/sala/:id", recursoController.getBySala)
   .post("/", verifyToken, recursoController.create)

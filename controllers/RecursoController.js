@@ -64,6 +64,15 @@ const getBySala = async (req, res) => {
   }
 }
 
+const getByEstado = async (req, res) => {
+  try {
+    const response = await salaRecursoService.getByEstado(req.body.estado);
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+}
+
 const updateBySala = async (req, res) =>{
   try {
     const body = req.body;
@@ -102,6 +111,7 @@ module.exports = {
   _delete,
   getAll,
   getBySala,
+  getByEstado,
   updateBySala,
   assignRecurso,
   unassignRecurso,

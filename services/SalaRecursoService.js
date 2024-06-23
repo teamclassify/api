@@ -29,7 +29,22 @@ class SalaRecursoService {
     return res.length > 0 ? res : null;
   }
 
+  async getByEstado(estado) {
+    const [res] = await db.query(`
+      SELECT r.nombre as recurso, e.nombre as edificio, s.nombre as sala, r.descripcion, r.img FROM sala_recursos sr
+        INNER JOIN recursos r ON sr.recurso_id = r.id
+        INNER JOIN salas s ON sr.sala_id = s.id
+        INNER JOIN edificios e ON s.edificio_id = e.id
+        WHERE sr.estado = '${estado}'
+    `);
+    return res.length > 0 ? res : null;
+  }
+
   async create(data) {
+    const query = await models.SalaRecurso.findAll({where: {sala_id: data.sala_id, recurso_id: data.recurso_id}});
+    if(query.length > 0){
+      return null;
+    }
     const model = await models.SalaRecurso.create(data);
     return model;
   }

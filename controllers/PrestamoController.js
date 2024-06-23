@@ -151,13 +151,13 @@ const create = async (req, res) => {
   ) {
     return res
       .status(400)
-      .send({success: false, message: "Faltan datos del prestamo"});
+      .send({success: false, message: "Faltan datos del préstamo"});
   }
 
   try {
     const response = await service.create(req.body, req.uid);
 
-    // await sendEmailLoan(req, res, response);
+    await sendEmailLoan(req, res, response);
     return res.json({success: true, data: response});
   } catch (error) {
     res.status(500).send({success: false, message: error.message});
@@ -237,7 +237,7 @@ const update = async (req, res) => {
     const eventsInRange = await eventoService.findBySalaAndRangeHours(response.sala_id, response.fecha, response.hora_inicio, response.hora_fin);
 
     if (response?.estado !== 'CANCELADO' && eventsInRange.length > 0) {
-      await service.update(id, {estado: 'PREAPROBADO'});
+      await service.update(id, {estado: 'PENDIENTE'});
       return res.status(500).send({success: false, message: "No se puede crear un evento en este rango horario."});
     }
 

@@ -7,7 +7,7 @@ const SalaRecurso = db.define("sala_recursos", {
     id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     sala_id: { type: sequelize.INTEGER, references: { model: 'salas', key: 'id'}},
     recurso_id: { type: sequelize.INTEGER, references: { model: 'recursos', key: 'id'}},
-    activo: { type: sequelize.BOOLEAN, default: true },
+    estado: { type: sequelize.STRING },
   },
   {
     timestamps: false,

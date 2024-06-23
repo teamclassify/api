@@ -7,6 +7,7 @@ const onlyAdminsOrSupport = require("../middlewares/onlyAdminsOrSupport");
 
 router
   .get("/", recursoController.getAll)
+  .get("/estado/", recursoController.getByEstado)
   .get("/:id", recursoController.getById)
   .get("/sala/:id", recursoController.getBySala)
   .post("/", verifyToken, onlyAdminsOrSupport, recursoController.create)

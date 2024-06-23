@@ -98,6 +98,51 @@ const uploadSalas = async (req, res) => {
   }
 };
 
+const uploadRecursos = async (req, res) => {
+  try {
+    const [isAdmin] = await verifyIsAdmin(req.uid);
+
+    if (isAdmin) {
+      const excelData = excelToJson(req.file);
+      let fileAllowed = true;
+      // check if the excel file has the correct structure
+      for (let el in excelData) {
+        if (!fileAllowed) {
+          break;
+        }
+        if (excelData[el].length > 0) {
+          excelData[el].forEach((element) => {
+            if (
+              !element.hasOwnProperty("Nombre") ||
+              !element.hasOwnProperty("Descripcion") ||
+              !element.hasOwnProperty("Edificio") ||
+              !element.hasOwnProperty("Sala")
+            ) {
+              fileAllowed = false;
+            }
+          });
+        }
+      }
+
+      if (!fileAllowed) {
+        return res.status(400).json({
+          success: false,
+          data: "La estructura del archivo no es correcta",
+        });
+      }
+
+      const response = await service.uploadRecursos(excelData);
+      return res.json({ success: true, data: response });
+    } else {
+      return res
+        .status(401)
+        .json({ success: false, data: "Este usuario no tiene permisos" });
+    }
+  } catch (error) {
+    res.status(500).send({ success: false, data: error });
+  }
+};
+
 const update = async (req, res) => {
   try {
     const [isAdmin] = await verifyIsAdmin(req.uid);
@@ -135,6 +180,7 @@ const _delete = async (req, res) => {
 module.exports = {
   uploadClases,
   uploadSalas,
+  uploadRecursos,
   update,
   _delete,
 };

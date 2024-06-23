@@ -9,6 +9,8 @@ const SalaService = require("../services/SalaService");
 const db = require("../db/index");
 const models = require("../db/models");
 const getCurrentDay = require("../utils/getCurrentDay");
+const sala = require("../db/models/sala");
+const edificio = require("../db/models/edificio");
 
 const service = new ClaseService();
 const horarioService = new HorarioService();
@@ -315,6 +317,64 @@ class FileService {
               rejectEdificio(new Error("Error al crear las salas y edificios"));
             }
           });
+      });
+    }
+  }
+
+  async uploadRecursos(data) {
+    let recursos = [];
+
+    for (let element in data) {
+      const recursosData = data[element].map((x) => {
+        return {
+          nombre: x["Nombre"],
+          descripcion: x["Descripcion"],
+          sala: x["Sala"],
+          edificio: x["Edificio"]
+        };
+      });
+
+      recursos = recursos.concat(recursosData);
+
+      return new Promise((resolve, reject) => {
+        Promise.all(
+          recursos.map((recurso) => {
+            return models.Recurso.create({
+              nombre: recurso.nombre,
+              descripcion: recurso.descripcion
+            })
+              .then((recursoCreado) => {
+                if (recurso.sala !== '-') {
+                  return edificioService.find({
+                    nombre: recurso.edificio
+                  })
+                  .then((edificio) => {
+                    return salaService.find({
+                      nombre: recurso.sala,
+                      edificio_id: edificio[0].id
+                    })
+                    .then((sala) => {
+                      return models.SalaRecurso.create({
+                        sala_id: sala[0].id,
+                        recurso_id: recursoCreado.id,
+                        estado: 'ACTIVO'
+                      });
+                    });
+                  });
+                }
+                return recursoCreado;
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          })
+        )
+        .then(() => {
+          resolve({ message: "Recursos creados y asociados correctamente" });
+        })
+        .catch((error) => {
+          reject(error);
+        });
       });
     }
   }

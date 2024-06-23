@@ -11,6 +11,7 @@ const user = db.define(
     photo: { type: sequelize.STRING },
     username: { type: sequelize.STRING },
     estado: { type: sequelize.STRING },
+    tipo: { type: sequelize.STRING },
   },
   {
     freezeTableName: true,

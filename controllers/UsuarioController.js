@@ -2,6 +2,7 @@ const UserService = require("../services/UserService");
 const UsuarioRolService = require("../services/UsuarioRolService");
 const RolService = require("../services/RolService");
 const {verifyIsSuperAdmin} = require("../utils/verifyIsAdmin");
+const sendEmail = require('../utils/sendEmail');
 
 const service = new UserService();
 const usuarioRolService = new UsuarioRolService();
@@ -70,6 +71,15 @@ const update = async (req, res) => {
     const { id } = req.params;
     const body = req.body;
     const response = await service.update(id, body);
+    
+    if (response?.estado === 'ACTIVO') {
+      await sendEmail({
+        to: response?.correo,
+        subject: "Usuario activado | Préstamo de Salas",
+        message: "Tu usuario ya se encuentra activado. Muchas gracias por la espera."
+      })
+    }
+    
     res.json({ success: true, data: response });
   } catch (error) {
     res.status(500).send({ success: false, message: error.message });

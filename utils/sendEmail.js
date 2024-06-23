@@ -14,12 +14,16 @@ const HTML_TEMPLATE = (subject, children) => {
             margin: 0;
             padding: 0;
         }
+        
+        .logo {
+            display: block;
+            max-width: 100px;
+            margin-bottom: 1rem;
+        }
 
         .container {
             max-width: 600px;
             margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
             border-radius: 5px;
         }
 
@@ -51,9 +55,6 @@ const HTML_TEMPLATE = (subject, children) => {
         .signature-container {
             max-width: 600px;
             margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
             background-color: #fff;
         }
 
@@ -74,12 +75,14 @@ const HTML_TEMPLATE = (subject, children) => {
 </head>
 <body>
     <div class="container">
+        <img class="logo" alt="logo departamento de sistenmas ufps" src="https://firebasestorage.googleapis.com/v0/b/classify-app-676cc.appspot.com/o/departamento_logo.png?alt=media&token=4ff7a9e3-22cd-41c6-8a99-45cf516df0f2" />
+    
         ${children}
 
         <div class="signature-container">
         <div class="signature-content">
             <p>Atentamente,</p>
-            <p>Préstamo de Salas - Programa de Ingenieria de Sistemas UFPS</p>
+            <p>Préstamo de Salas - Departamento de Ingenieria de Sistemas UFPS</p>
             <p><a href="https://app-classify.vercel.app">www.app-classify.vercel.app</a></p>
         </div>
     </div>

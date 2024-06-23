@@ -19,7 +19,7 @@ class UserService {
   async getAll({name, state, rol} = {name: "", state: null, rol: null}) {
     const res = await db.query(`
         SELECT * FROM vista_usuarios
-        WHERE nombre LIKE '%${name}%' ${state ? `AND estado = '${state}'` : ""} ${rol ? `AND rol LIKE '%${rol}%'` : ""}
+        WHERE NOT rol LIKE '%superadmin%' AND nombre LIKE '%${name}%' ${state ? `AND estado = '${state}'` : ""} ${rol ? `AND rol LIKE '%${rol}%'` : ""}
         ORDER BY nombre
     `);
 

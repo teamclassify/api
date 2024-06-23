@@ -98,6 +98,11 @@ class SalaService {
 
   async create(data) {
     const res = await models.Sala.create(data);
+
+    await models.Horario.create({
+      sala_id: res.id
+    })
+
     return res;
   }
 

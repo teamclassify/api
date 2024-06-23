@@ -39,6 +39,8 @@ const login = async (req, res) => {
                     createdAt: userCreated.createdAt,
                     updatedAt: userCreated.updatedAt,
                     username: userCreated.username,
+                    estado: userCreated.estado,
+                    tipo: userCreated.tipo
                   },
                 });
               });
@@ -81,6 +83,8 @@ const login = async (req, res) => {
                   createdAt: user.createdAt,
                   updatedAt: user.updatedAt,
                   username: user.username,
+                  estado: user.estado,
+                  tipo: user.tipo
                 },
               });
             });

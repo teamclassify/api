@@ -243,38 +243,73 @@ const update = async (req, res) => {
 
     // TODO: crear el evento
     if (response && response?.estado === 'APROBADO') {
-      const evento = await eventoService.create({
-        prestamo_id: response.id
-      })
+      if (response?.tipo === 'UNICO') {
+        const evento = await eventoService.create({
+          prestamo_id: response.id
+        })
+  
+        const horarioElement = await horarioService.findBySala(edificio, sala)
+  
+        if (!horarioElement || horarioElement?.length <= 0) {
+          return res.status(500).send({success: false, message: "Error al crear el evento del préstamo."});
+        }
+  
+        const dias = [
+          "domingo",
+          "lunes",
+          "martes",
+          "miercoles",
+          "jueves",
+          "viernes",
+          "sabado",
+        ];
+  
+        const dia = await models.Dia.create({
+          nombre: dias[new Date(response.fecha.replaceAll('-', "/")).getDay()],
+          fecha: response.fecha,
+          horario_id: horarioElement[0].horario,
+        })
+  
+        const hour = await models.Hora.create({
+          dia_id: dia.id,
+          hora_inicio: response.hora_inicio,
+          hora_fin: response.hora_fin,
+          evento_id: evento.id,
+        });
+      } else {
+        const prestamo = await service.findOne(response?.id);
+        const prestamoDias = prestamo?.dias?.split(',') ?? [];
+        const prestamoHorasInicio = prestamo?.horas_inicio?.split(',') ?? [];
+        const prestamoHorasFin = prestamo?.horas_fin?.split(',') ?? [];
+        
+        await Promise.all(
+          prestamoDias.map(async (diaEl, index) => {
+            const eventoPrestamo = await eventoService.create({
+              prestamo_id: response.id
+            })
 
-      const horarioElement = await horarioService.findBySala(edificio, sala)
+            const horarioElementPrestamo = await horarioService.findBySala(edificio, sala)
 
-      if (!horarioElement || horarioElement?.length <= 0) {
-        return res.status(500).send({success: false, message: "Error al crear el evento del préstamo."});
+            if (!horarioElementPrestamo || horarioElementPrestamo?.length <= 0) {
+              return res.status(500).send({success: false, message: "Error al crear el evento del préstamo."});
+            }
+
+            const dia = await models.Dia.create({
+              nombre: diaEl,
+              fecha: null,
+              horario_id: horarioElementPrestamo[0].horario,
+            })
+
+            const hour = await models.Hora.create({
+              dia_id: dia.id,
+              hora_inicio: prestamoHorasInicio[index],
+              hora_fin: prestamoHorasFin[index],
+              evento_id: eventoPrestamo.id,
+            });
+          })
+        )
       }
-
-      const dias = [
-        "domingo",
-        "lunes",
-        "martes",
-        "miercoles",
-        "jueves",
-        "viernes",
-        "sabado",
-      ];
-
-      const dia = await models.Dia.create({
-        nombre: dias[new Date(response.fecha.replaceAll('-', "/")).getDay()],
-        fecha: response.fecha,
-        horario_id: horarioElement[0].horario,
-      })
-
-      const hour = await models.Hora.create({
-        dia_id: dia.id,
-        hora_inicio: response.hora_inicio,
-        hora_fin: response.hora_fin,
-        evento_id: evento.id,
-      });
+      
     }
 
     if (response?.estado === 'CANCELADO') {

@@ -19,6 +19,12 @@ router
     verifyToken,
     upload.single("file"),
     fileController.uploadSalas
+  )
+  .post(
+    "/upload/recursos",
+    verifyToken,
+    upload.single("file"),
+    fileController.uploadRecursos
   );
 
 module.exports = router;

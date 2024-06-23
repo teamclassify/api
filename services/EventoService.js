@@ -17,7 +17,7 @@ class EventoService {
   async findBySala(sala_id) {
     const [results] = await db.query(
       `(SELECT e.id, d.fecha, c.cod_asignatura, h.hora_inicio, h.hora_fin, c.nombre, e.asistencia,
-        d.nombre as dia , s.nombre as sala, c.estado, c.cod_docente, 'clase' as tipo, s.capacidad as cantidad_personas,
+        d.nombre as dia , s.nombre as sala, c.estado, c.cod_docente, 'clase' as tipo, s.capacidad as cantidad_personas, NULL as prestamo_tipo,
         NULL as usuario_id, NULL as usuario_nombre, NULL as usuario_foto, NULL as usuario_codigo, NULL as usuario_username
       FROM salas s
       INNER JOIN horarios h2 ON s.id = h2.sala_id
@@ -27,7 +27,7 @@ class EventoService {
       INNER JOIN clase c ON e.clase_id = c.id
       WHERE c.estado = 'APROBADO' AND s.id = ${sala_id}) UNION
       (SELECT e.id, d.fecha, NULL as cod_asignatura, h.hora_inicio, h.hora_fin, p.razon as nombre, e.asistencia,
-        d.nombre as dia , s.nombre as sala, p.estado, NULL as cod_docente, 'prestamo' as tipo, p.cantidad_personas,
+        d.nombre as dia , s.nombre as sala, p.estado, NULL as cod_docente, 'prestamo' as tipo, p.cantidad_personas, p.tipo as prestamo_tipo,
        u.id as usuario_id, u.nombre as usuario_nombre, u.photo as usuario_foto, u.codigo as usuario_codigo, u.username as usuario_username
       FROM salas s
       INNER JOIN horarios h2 ON s.id = h2.sala_id
@@ -45,6 +45,8 @@ class EventoService {
   }
 
   async findBySalaAndRangeHours(sala_id, fecha, start_hour, end_hour) {
+    if (fecha === null || start_hour ===  null || end_hour === null) return [];
+    
     const dias = [
       "domingo",
       "lunes",

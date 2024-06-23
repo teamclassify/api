@@ -68,6 +68,34 @@ class SalaService {
     return results;
   }
 
+  async getSalasDisponiblesRango(fecha_inicio, fecha_fin, dias) {
+    const [results] = await db.query(
+      `SELECT s.id, e.nombre as edificio, s.nombre, s.capacidad, s.cantidad_computadores
+      FROM salas s
+      INNER JOIN edificios e ON s.edificio_id = e.id
+      WHERE s.id NOT IN (
+        SELECT s.id
+        FROM salas s
+        INNER JOIN horarios h2 ON s.id = h2.sala_id
+        INNER JOIN dia d ON h2.id = d.horario_id
+        INNER JOIN horas h ON d.id = h.dia_id
+        INNER JOIN evento e ON h.evento_id = e.id
+        WHERE ${dias?.map(dia => `((((e.clase_id IS NOT NULL AND d.nombre = '${dia.dia}'))
+        AND (
+          (h.hora_inicio = ${dia.hora_inicio})
+          OR
+          (h.hora_inicio = ${dia.hora_inicio} AND h.hora_fin = ${dia.hora_fin})
+          OR
+          (h.hora_inicio >= ${dia.hora_inicio} AND h.hora_inicio < ${dia.hora_fin})
+          OR
+          (h.hora_fin > ${dia.hora_inicio} AND h.hora_fin <= ${dia.hora_fin})
+        )
+      ))`).join(dias.length > 1 ? ' OR ' : ' ')})
+      `
+    );
+    return results;
+  }
+
   async create(data) {
     const res = await models.Sala.create(data);
     return res;

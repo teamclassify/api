@@ -43,6 +43,16 @@ const getSalasDisponibles = async (req, res) => {
   }
 };
 
+const getSalasDisponiblesRango = async (req, res) => {
+  try {
+    const { fecha_inicio, fecha_fin, dias } = req.body;
+    const response = await service.getSalasDisponiblesRango(fecha_inicio, fecha_fin, dias);
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
 const update = async (req, res) => {
   try {
     const { id } = req.params;
@@ -71,4 +81,5 @@ module.exports = {
   update,
   _delete,
   getSalasDisponibles,
+  getSalasDisponiblesRango
 };

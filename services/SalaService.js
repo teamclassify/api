@@ -20,6 +20,17 @@ class SalaService {
     return res;
   }
 
+  async findById(id) {
+    const [results] = await db.query(
+      `SELECT s.id, s.nombre as sala, e.nombre as edificio
+        FROM salas s
+        INNER JOIN edificios e ON e.id = s.edificio_id
+        WHERE s.id = ${id}
+      `
+    );
+    return results?.length > 0 ? results[0] : null;
+  }
+
   async getSalasDisponibles(fecha, start_hour, end_hour) {
     const dias = [
       "domingo",

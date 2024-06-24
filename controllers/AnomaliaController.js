@@ -1,7 +1,12 @@
 const AnomaliaService = require('../services/AnomaliaService');
 const PrestamoService = require('../services/PrestamoService');
+const UsuarioRolService = require('../services/UsuarioRolService');
+const SalaService = require('../services/SalaService');
+const sendEmail = require("../utils/sendEmail");
 const service = new AnomaliaService();
 const prestamoService = new PrestamoService();
+const usuarioRolService = new UsuarioRolService();
+const salaService = new SalaService();
 
 const getAll = async (req, res) => {
   const filters = req.query.estado
@@ -45,6 +50,33 @@ const create = async (req, res) => {
       descripcion,
       usuario_id: req.uid
     });
+    
+    const sala = await salaService.findById(prestamo.sala_id);
+
+    if (!sala) {
+      return res.status(404).send({success: false, message: "No se encontro la sala de la anomalia."});
+    }
+    
+    const usersSoporte = await usuarioRolService.findSoporte();
+
+    console.log(usersSoporte)
+    console.log(sala)
+    
+    await Promise.all(
+      usersSoporte.map(async el => {
+        return await sendEmail({
+          to: el?.correo,
+          subject: "Reporte de Anomalía | Préstamo de Salas",
+          message: `
+            <p>Nueva anomalia reportada en la sala ${sala.edificio} - ${sala.sala}</p>
+            
+            <p>Reporte:</p>
+            <p>${descripcion}</p>
+          `
+        })
+      })
+    )
+    
     res.status(201).json({success: true, data: response});
   } catch (error) {
     res.status(500).send({success: false, message: error.message});

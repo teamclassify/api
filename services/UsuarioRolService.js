@@ -41,6 +41,24 @@ class UsuarioRolService {
     return res.length > 0 ? res[0] : null;
   }
 
+  async findSoporte() {
+    const [res] = await db.query(`
+      SELECT
+        u.nombre,
+        u.correo,
+        u.estado,
+        u.id,
+        u.tipo
+      FROM usuario_rols ur
+      INNER JOIN usuario u ON u.id = ur.usuario_id
+      JOIN rols r ON r.id = ur.rol_id
+      WHERE r.nombre = 'soporte_tecnico'
+      group by u.id
+    `);
+
+    return res.length > 0 ? res : null;
+  }
+
   async create(data) {
     const user = await models.UsuarioRol.create(data);
     return user;

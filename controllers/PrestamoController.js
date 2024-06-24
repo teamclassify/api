@@ -9,8 +9,8 @@ const eventoService = new EventoService();
 const horarioService = new HorarioService();
 
 const sendEmailLoan = async (req, res, loan) => {
-  const loanInDB = await service.findOne(loan.id);
-
+  const loanInDB = loan?.id ? await service.findOne(loan.id) : await service.findOne(loan[0].prestamo_id)
+  
   if (!loanInDB) return;
 
   await sendEmail({
@@ -18,15 +18,29 @@ const sendEmailLoan = async (req, res, loan) => {
     subject: "Petición de préstamo recibida",
     message: `
         <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
-
-        <p>Se ha realizado el registro de una sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
+        
+        ${loanInDB?.tipo === 'UNICO' ? `<p>
+            Se ha realizado el registro de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}
+        </p>` : `<div>
+            <p>
+            Se ha realizado el registro del préstamo semestral de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para los días:
+            </p>
+            
+            ${loanInDB?.dias?.split(',').map((dia, index) => `<p>
+                ${dia.toUpperCase()} -
+                ${loanInDB?.horas_inicio?.split(',')[index]}
+                a ${loanInDB?.horas_fin?.split(',')[index]}
+              </p>`).join(' ')}
+            </div>
+        `}
+        
         <p>El personal de soporte analizará la disponibilidad y le será notificado el estado de su solicitud.</p>
       `
   });
 }
 
 const sendEmailLoanCanceled = async (req, res, loan) => {
-  const loanInDB = await service.findOne(loan.id);
+  const loanInDB = loan?.id ? await service.findOne(loan.id) : null;
 
   if (!loanInDB) return;
 
@@ -36,7 +50,20 @@ const sendEmailLoanCanceled = async (req, res, loan) => {
     message: `
         <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
 
-        <p>Se ha cancelado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
+        ${loanInDB?.tipo === 'UNICO' ? `<p>
+            Se ha cancelado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}
+        </p>` : `<div>
+            <p>
+            Se ha cancelado el préstamo semestral de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para los días:
+            </p>
+            
+            ${loanInDB?.dias?.split(',').map((dia, index) => `<p>
+                ${dia.toUpperCase()} -
+                ${loanInDB?.horas_inicio?.split(',')[index]}
+                a ${loanInDB?.horas_fin?.split(',')[index]}
+              </p>`).join(' ')}
+            </div>
+        `}
         
         ${loanInDB.razon_cancelacion ? `<p>
           <strong>Razón de la cancelación</strong>: ${loanInDB.razon_cancelacion}
@@ -46,7 +73,7 @@ const sendEmailLoanCanceled = async (req, res, loan) => {
 }
 
 const sendEmailLoanAccepted = async (req, res, loan) => {
-  const loanInDB = await service.findOne(loan.id);
+  const loanInDB = loan?.id ? await service.findOne(loan.id) : null;
 
   if (!loanInDB) return;
 
@@ -55,8 +82,21 @@ const sendEmailLoanAccepted = async (req, res, loan) => {
     subject: "Aceptación de préstamo",
     message: `
         <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
-
-        <p>Se ha aceptado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
+        
+        ${loanInDB?.tipo === 'UNICO' ? `<p>
+            Se ha aceptado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}
+        </p>` : `<div>
+            <p>
+            Se ha aceptado el préstamo semestral de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para los días:
+            </p>
+            
+            ${loanInDB?.dias?.split(',').map((dia, index) => `<p>
+                ${dia.toUpperCase()} -
+                ${loanInDB?.horas_inicio?.split(',')[index]}
+                a ${loanInDB?.horas_fin?.split(',')[index]}
+              </p>`).join(' ')}
+            </div>
+        `}
       `
   });
 }
@@ -74,8 +114,8 @@ const create = async (req, res) => {
 
   try {
     const response = await service.create(req.body, req.uid);
-
-    await sendEmailLoan(req, res, response);
+    
+    if (response) await sendEmailLoan(req, res, response);
     return res.json({success: true, data: response});
   } catch (error) {
     res.status(500).send({success: false, message: error.message});

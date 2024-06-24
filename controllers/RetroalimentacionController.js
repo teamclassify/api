@@ -3,7 +3,7 @@ service = new retroService();
 
 const create = async (req, res) => {
     try {
-      const response = await service.create(req.body);
+      const response = await service.create({...req.body, usuario_id: req.uid});
       res.json({ success: true, data: response });
     } catch (error) {
       res.status(500).send({ success: false, message: error.message });
@@ -46,10 +46,22 @@ const getByRol = async (req, res) => {
     }
 };
 
+const getByLoan = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const response = await service.getByLoan(id);
+    res.json({ success: true, data: response });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
     create,
     getAll,
     getBySala,
     getByUsuario,
-    getByRol
+    getByRol,
+  getByLoan
 };

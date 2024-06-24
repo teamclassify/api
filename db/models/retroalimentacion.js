@@ -6,7 +6,7 @@ const retroalimentacion = db.define(
   {
     id: { type: sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     prestamo_id: { type: sequelize.INTEGER, references: {model: 'prestamo', key: 'id'}},
-    usuario_id: { type: sequelize.INTEGER, references: {model: 'usuario', key: 'id'}},
+    usuario_id: { type: sequelize.STRING, references: {model: 'usuario', key: 'id'}},
     valoracion: { type: sequelize.INTEGER },
     comentario: { type: sequelize.STRING },
   },

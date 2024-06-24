@@ -6,6 +6,7 @@ const verifyToken = require("../middlewares/verifyToken");
 
 router
   .get("/", verifyToken, controller.getAll)
+  .get("/:id", verifyToken, controller.getByLoan)
   .get("/usuario/", verifyToken, controller.getByUsuario)
   .get("/sala/", verifyToken, controller.getBySala)
   .get("/rol/", verifyToken, controller.getByRol)

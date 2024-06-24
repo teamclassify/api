@@ -71,6 +71,28 @@ class RetroalimentacionService {
       );
     return res.length > 0 ? res[0] : null;
   }
+
+  async getByLoan(id) {
+    const [res] = await db.query(`
+      SELECT
+      u.nombre as usuario_nombre,
+      u.photo as usuario_photo,
+      u.correo as usuario_correo,
+      u.tipo as usuario_tipo,
+      e.nombre as edificio,
+      s.nombre as sala,
+      r.valoracion,
+      r.comentario
+      FROM retroalimentacions r
+      INNER JOIN prestamo p ON r.prestamo_id = p.id
+      INNER JOIN salas s ON p.sala_id = s.id
+      INNER JOIN edificios e ON s.edificio_id = e.id
+      INNER JOIN usuario u ON r.usuario_id = u.id
+      WHERE p.id = ${id}
+      `
+    );
+    return res.length > 0 ? res[0] : null;
+  }
 }
 
 module.exports = RetroalimentacionService;

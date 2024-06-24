@@ -9,52 +9,38 @@ const eventoService = new EventoService();
 const horarioService = new HorarioService();
 
 const sendEmailLoan = async (req, res, loan) => {
-  const loanInDB = await service.findOne(loan.id);
-
+  const loanInDB = loan?.id ? await service.findOne(loan.id) : await service.findOne(loan[0].prestamo_id)
+  
   if (!loanInDB) return;
 
   await sendEmail({
     to: req.body.email,
     subject: "Petición de préstamo recibida",
     message: `
-        <p>Querido, ${loanInDB.usuario_nombre}</p>
-
-        <p>Este correo electrónico confirma que hemos recibido su solicitud para la siguiente reserva de sala:</p>
-
-        <div class="info">
-            <div class="flex">
-              <label for="date">Fecha y hora: </label>
-              <p id="date">${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
-            </div>
-
-            <div class="flex">
-              <label for="room">Sala: </label>
-              <p id="room">${loanInDB.edificio} - ${loanInDB.sala}</p>
-            </div>
+        <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
+        
+        ${loanInDB?.tipo === 'UNICO' ? `<p>
+            Se ha realizado el registro de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}
+        </p>` : `<div>
+            <p>
+            Se ha realizado el registro del préstamo semestral de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para los días:
+            </p>
             
-            <div class="flex">
-              <label for="reason">Razón: </label>
-              <p id="reason">${loanInDB.razon}</p>
+            ${loanInDB?.dias?.split(',').map((dia, index) => `<p>
+                ${dia.toUpperCase()} -
+                ${loanInDB?.horas_inicio?.split(',')[index]}
+                a ${loanInDB?.horas_fin?.split(',')[index]}
+              </p>`).join(' ')}
             </div>
-
-            <div class="flex">
-              <label for="equipment">Recursos necesarios: </label>
-              <p id="equipment">${loanInDB.recursos}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="equipment">Cantidad de personas que asistiran: </label>
-              <p id="equipment">${loanInDB.cantidad_personas}</p>
-            </div>
-        </div>
-
-        <p>Revisaremos su solicitud y nos comunicaremos con usted lo antes posible.</p>
+        `}
+        
+        <p>El personal de soporte analizará la disponibilidad y le será notificado el estado de su solicitud.</p>
       `
   });
 }
 
 const sendEmailLoanCanceled = async (req, res, loan) => {
-  const loanInDB = await service.findOne(loan.id);
+  const loanInDB = loan?.id ? await service.findOne(loan.id) : null;
 
   if (!loanInDB) return;
 
@@ -62,46 +48,32 @@ const sendEmailLoanCanceled = async (req, res, loan) => {
     to: loanInDB.usuario_correo,
     subject: "Cancelación de préstamo",
     message: `
-        <p>Querido, ${loanInDB.usuario_nombre}</p>
+        <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
 
-        <p>Este correo electrónico confirma que se ha <strong>cancelado</strong> la reserva de la sala:</p>
+        ${loanInDB?.tipo === 'UNICO' ? `<p>
+            Se ha cancelado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}
+        </p>` : `<div>
+            <p>
+            Se ha cancelado el préstamo semestral de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para los días:
+            </p>
+            
+            ${loanInDB?.dias?.split(',').map((dia, index) => `<p>
+                ${dia.toUpperCase()} -
+                ${loanInDB?.horas_inicio?.split(',')[index]}
+                a ${loanInDB?.horas_fin?.split(',')[index]}
+              </p>`).join(' ')}
+            </div>
+        `}
         
         ${loanInDB.razon_cancelacion ? `<p>
           <strong>Razón de la cancelación</strong>: ${loanInDB.razon_cancelacion}
         </p>` : ''}
-
-        <div class="info">
-            <div class="flex">
-              <label for="date">Fecha y hora: </label>
-              <p id="date">${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
-            </div>
-
-            <div class="flex">
-              <label for="room">Sala: </label>
-              <p id="room">${loanInDB.edificio} - ${loanInDB.sala}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="reason">Razón: </label>
-              <p id="reason">${loanInDB.razon}</p>
-            </div>
-
-            <div class="flex">
-              <label for="equipment">Recursos necesarios: </label>
-              <p id="equipment">${loanInDB.recursos}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="equipment">Cantidad de personas que asistiran: </label>
-              <p id="equipment">${loanInDB.cantidad_personas}</p>
-            </div>
-        </div>
       `
   });
 }
 
 const sendEmailLoanAccepted = async (req, res, loan) => {
-  const loanInDB = await service.findOne(loan.id);
+  const loanInDB = loan?.id ? await service.findOne(loan.id) : null;
 
   if (!loanInDB) return;
 
@@ -109,36 +81,22 @@ const sendEmailLoanAccepted = async (req, res, loan) => {
     to: loanInDB.usuario_correo,
     subject: "Aceptación de préstamo",
     message: `
-        <p>Querido, ${loanInDB.usuario_nombre}</p>
-
-        <p>Este correo electrónico confirma que se ha <strong>aceptado</strong> la reserva de la sala:</p>
-
-        <div class="info">
-            <div class="flex">
-              <label for="date">Fecha y hora: </label>
-              <p id="date">${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
-            </div>
-
-            <div class="flex">
-              <label for="room">Sala: </label>
-              <p id="room">${loanInDB.edificio} - ${loanInDB.sala}</p>
-            </div>
+        <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
+        
+        ${loanInDB?.tipo === 'UNICO' ? `<p>
+            Se ha aceptado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}
+        </p>` : `<div>
+            <p>
+            Se ha aceptado el préstamo semestral de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para los días:
+            </p>
             
-            <div class="flex">
-              <label for="reason">Razón: </label>
-              <p id="reason">${loanInDB.razon}</p>
+            ${loanInDB?.dias?.split(',').map((dia, index) => `<p>
+                ${dia.toUpperCase()} -
+                ${loanInDB?.horas_inicio?.split(',')[index]}
+                a ${loanInDB?.horas_fin?.split(',')[index]}
+              </p>`).join(' ')}
             </div>
-
-            <div class="flex">
-              <label for="equipment">Recursos necesarios: </label>
-              <p id="equipment">${loanInDB.recursos}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="equipment">Cantidad de personas que asistiran: </label>
-              <p id="equipment">${loanInDB.cantidad_personas}</p>
-            </div>
-        </div>
+        `}
       `
   });
 }
@@ -151,13 +109,13 @@ const create = async (req, res) => {
   ) {
     return res
       .status(400)
-      .send({success: false, message: "Faltan datos del prestamo"});
+      .send({success: false, message: "Faltan datos del préstamo"});
   }
 
   try {
     const response = await service.create(req.body, req.uid);
-
-    // await sendEmailLoan(req, res, response);
+    
+    if (response) await sendEmailLoan(req, res, response);
     return res.json({success: true, data: response});
   } catch (error) {
     res.status(500).send({success: false, message: error.message});
@@ -237,7 +195,7 @@ const update = async (req, res) => {
     const eventsInRange = await eventoService.findBySalaAndRangeHours(response.sala_id, response.fecha, response.hora_inicio, response.hora_fin);
 
     if (response?.estado !== 'CANCELADO' && eventsInRange.length > 0) {
-      await service.update(id, {estado: 'PREAPROBADO'});
+      await service.update(id, {estado: 'PENDIENTE'});
       return res.status(500).send({success: false, message: "No se puede crear un evento en este rango horario."});
     }
 

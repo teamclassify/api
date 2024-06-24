@@ -9,5 +9,6 @@ router
   .get("/prestamos/total", verifyToken, onlyAdmins, statsController.getLoansTotal)
   .get("/prestamos/meses", verifyToken, onlyAdmins, statsController.getLoansByMonths)
   .get("/usuarios", verifyToken, onlyAdmins, statsController.getUsers)
+  .get("/feedback", verifyToken, onlyAdmins, statsController.getFeedback)
 
 module.exports = router;

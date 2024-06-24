@@ -81,9 +81,9 @@ const HTML_TEMPLATE = (subject, children) => {
 
         <div class="signature-container">
         <div class="signature-content">
-            <p>Atentamente,</p>
-            <p>Préstamo de Salas - Departamento de Ingenieria de Sistemas UFPS</p>
-            <p><a href="https://app-classify.vercel.app">www.app-classify.vercel.app</a></p>
+            <p>Gracias,</p>
+            <p>Soporte </p>
+            <p>Dpto de Sistemas e Informática</p>
         </div>
     </div>
     </div>

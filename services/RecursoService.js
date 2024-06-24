@@ -1,4 +1,5 @@
 const models = require("../db/models");
+const db = require("../db");
 
 class RecursoService {
   constructor() {}
@@ -6,6 +7,16 @@ class RecursoService {
   async find(query = {}) {
     const res = await models.Recurso.findAll(query);
     return res;
+  }
+
+  async findUniques() {
+    const res = await db.query(`
+        SELECT nombre, COUNT(id) AS id_count
+        FROM recursos
+        GROUP BY nombre
+      `);
+
+    return res.length > 0 ? res[0] : null;
   }
 
   async findOne(id) {

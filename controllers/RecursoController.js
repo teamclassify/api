@@ -54,6 +54,15 @@ const getAll = async (_, res) => {
   }
 }
 
+const getAllUnique = async (_, res) => {
+  try {
+    const salasRecursos = await recursoService.findUniques();
+    res.json({ success: true, data: salasRecursos });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+}
+
 const getBySala = async (req, res) => {
   try {
     const { id } = req.params;
@@ -122,4 +131,5 @@ module.exports = {
   assignRecurso,
   unassignRecurso,
   getById,
+  getAllUnique,
 };

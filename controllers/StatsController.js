@@ -32,8 +32,20 @@ const getUsers = async (req, res) => {
   }
 };
 
+const getFeedback = async (req, res) => {
+  const year = req.query?.year ?? null;
+  
+  try {
+    const response = await service.getFeedback(year);
+    res.status(200).json({success: true, data: response});
+  } catch (error) {
+    res.status(500).send({success: false, message: error.message});
+  }
+};
+
 module.exports = {
   getLoansTotal,
   getLoansByMonths,
-  getUsers
+  getUsers,
+  getFeedback
 };

@@ -41,6 +41,19 @@ class StatsService {
 
     return res.length > 0 ? res[0] : null;
   }
+
+  async getFeedback(year = 'total') {
+    const res = await db.query(`
+      SELECT
+        valoracion,
+        COUNT(*) AS valoracion_count
+      FROM retroalimentacions
+      ${year !== 'total' ? `WHERE YEAR(createdAt) = ${year}`: ''}
+      GROUP BY valoracion;
+    `);
+
+    return res.length > 0 ? res[0] : null;
+  }
   
 }
 

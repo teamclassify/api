@@ -17,38 +17,10 @@ const sendEmailLoan = async (req, res, loan) => {
     to: req.body.email,
     subject: "Petición de préstamo recibida",
     message: `
-        <p>Querido, ${loanInDB.usuario_nombre}</p>
+        <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
 
-        <p>Este correo electrónico confirma que hemos recibido su solicitud para la siguiente reserva de sala:</p>
-
-        <div class="info">
-            <div class="flex">
-              <label for="date">Fecha y hora: </label>
-              <p id="date">${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
-            </div>
-
-            <div class="flex">
-              <label for="room">Sala: </label>
-              <p id="room">${loanInDB.edificio} - ${loanInDB.sala}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="reason">Razón: </label>
-              <p id="reason">${loanInDB.razon}</p>
-            </div>
-
-            <div class="flex">
-              <label for="equipment">Recursos necesarios: </label>
-              <p id="equipment">${loanInDB.recursos}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="equipment">Cantidad de personas que asistiran: </label>
-              <p id="equipment">${loanInDB.cantidad_personas}</p>
-            </div>
-        </div>
-
-        <p>Revisaremos su solicitud y nos comunicaremos con usted lo antes posible.</p>
+        <p>Se ha realizado el registro de una sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
+        <p>El personal de soporte analizará la disponibilidad y le será notificado el estado de su solicitud.</p>
       `
   });
 }
@@ -62,40 +34,13 @@ const sendEmailLoanCanceled = async (req, res, loan) => {
     to: loanInDB.usuario_correo,
     subject: "Cancelación de préstamo",
     message: `
-        <p>Querido, ${loanInDB.usuario_nombre}</p>
+        <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
 
-        <p>Este correo electrónico confirma que se ha <strong>cancelado</strong> la reserva de la sala:</p>
+        <p>Se ha cancelado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
         
         ${loanInDB.razon_cancelacion ? `<p>
           <strong>Razón de la cancelación</strong>: ${loanInDB.razon_cancelacion}
         </p>` : ''}
-
-        <div class="info">
-            <div class="flex">
-              <label for="date">Fecha y hora: </label>
-              <p id="date">${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
-            </div>
-
-            <div class="flex">
-              <label for="room">Sala: </label>
-              <p id="room">${loanInDB.edificio} - ${loanInDB.sala}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="reason">Razón: </label>
-              <p id="reason">${loanInDB.razon}</p>
-            </div>
-
-            <div class="flex">
-              <label for="equipment">Recursos necesarios: </label>
-              <p id="equipment">${loanInDB.recursos}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="equipment">Cantidad de personas que asistiran: </label>
-              <p id="equipment">${loanInDB.cantidad_personas}</p>
-            </div>
-        </div>
       `
   });
 }
@@ -109,36 +54,9 @@ const sendEmailLoanAccepted = async (req, res, loan) => {
     to: loanInDB.usuario_correo,
     subject: "Aceptación de préstamo",
     message: `
-        <p>Querido, ${loanInDB.usuario_nombre}</p>
+        <p>Cordial saludo, ${loanInDB.usuario_nombre}</p>
 
-        <p>Este correo electrónico confirma que se ha <strong>aceptado</strong> la reserva de la sala:</p>
-
-        <div class="info">
-            <div class="flex">
-              <label for="date">Fecha y hora: </label>
-              <p id="date">${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
-            </div>
-
-            <div class="flex">
-              <label for="room">Sala: </label>
-              <p id="room">${loanInDB.edificio} - ${loanInDB.sala}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="reason">Razón: </label>
-              <p id="reason">${loanInDB.razon}</p>
-            </div>
-
-            <div class="flex">
-              <label for="equipment">Recursos necesarios: </label>
-              <p id="equipment">${loanInDB.recursos}</p>
-            </div>
-            
-            <div class="flex">
-              <label for="equipment">Cantidad de personas que asistiran: </label>
-              <p id="equipment">${loanInDB.cantidad_personas}</p>
-            </div>
-        </div>
+        <p>Se ha aceptado el préstamo de la sala: ${loanInDB.edificio} - ${loanInDB.sala} para el día ${loanInDB.fecha} - ${loanInDB.hora_inicio} a ${loanInDB.hora_fin}</p>
       `
   });
 }
